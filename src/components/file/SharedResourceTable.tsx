@@ -13,14 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 // i18n-processed-v1.1.0
-import { useTranslation } from 'react-i18next'
-import { useEffect, useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Button } from '@/components/ui/button'
-import { useParams } from 'react-router-dom'
+import { useNavigate } from '@tanstack/react-router'
+import { useParams } from '@tanstack/react-router'
+import { ColumnDef } from '@tanstack/react-table'
+import { useAtomValue } from 'jotai'
+import {
+  ArrowLeftIcon,
+  BotIcon,
+  CalendarIcon,
+  DatabaseIcon,
+  File,
+  FileIcon,
+  FilesIcon,
+  Folder,
+  Trash,
+  User,
+  UserRoundIcon,
+  Users,
+  X,
+} from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
+
+import { Button } from '@/components/ui/button'
+import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Dialog,
   DialogClose,
@@ -31,64 +50,45 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { ShareDatasetToUserDialog } from '@/components/custom/UserNotInSelect'
-import {
-  apiListUsersInDataset,
-  apiListQueuesInDataset,
-  UserDataset,
-  QueueDataset,
-  UserDatasetResp,
-  QueueDatasetGetResp,
-  apiGetDatasetByID,
-  cancelSharedUserResp,
-  cancelSharedQueueResp,
-} from '@/services/api/dataset'
-import {
-  User,
-  Users,
-  X,
-  UserRoundIcon,
-  CalendarIcon,
-  Trash,
-  File,
-  FileIcon,
-  Folder,
-  BotIcon,
-  DatabaseIcon,
-  FilesIcon,
-  ArrowLeftIcon,
-} from 'lucide-react'
-import useBreadcrumb from '@/hooks/useBreadcrumb'
+
+import { DataTable } from '@/components/custom/DataTable'
 import { ShareDatasetToQueueDialog } from '@/components/custom/QueueNotInSelect'
-import { AxiosResponse } from 'axios'
+import { ShareDatasetToUserDialog } from '@/components/custom/UserNotInSelect'
+import { DetailPage } from '@/components/layout/DetailPage'
+
+import {
+  QueueDataset,
+  QueueDatasetGetResp,
+  UserDataset,
+  UserDatasetResp,
+  apiGetDatasetByID,
+  apiListQueuesInDataset,
+  apiListUsersInDataset,
+  cancelSharedQueueResp,
+  cancelSharedUserResp,
+} from '@/services/api/dataset'
+import { FileItem, apiGetDatasetFiles } from '@/services/api/file'
 import { IResponse } from '@/services/types'
-import { ColumnDef } from '@tanstack/react-table'
+
+import useIsAdmin from '@/hooks/useAdmin'
+import useBreadcrumb from '@/hooks/useBreadcrumb'
+
+import { atomUserInfo } from '@/utils/store'
+
 import { DataTableColumnHeader } from '../custom/DataTable/DataTableColumnHeader'
 import { TimeDistance } from '../custom/TimeDistance'
-import { DetailPage } from '@/components/layout/DetailPage'
-import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { DataTable } from '@/components/custom/DataTable'
-import { useNavigate } from 'react-router-dom'
-import { DatasetUpdateForm } from './updateform'
-import { globalUserInfo } from '@/utils/store'
-import { useAtomValue } from 'jotai'
-import DetailTitle from '../layout/DetailTitle'
-import { FileItem, apiGetDatasetFiles } from '@/services/api/file'
-import { FileSizeComponent } from './FileSize'
 import TooltipButton from '../custom/TooltipButton'
-import useIsAdmin from '@/hooks/useAdmin'
+import DetailTitle from '../layout/DetailTitle'
+import { FileSizeComponent } from './FileSize'
+import { DatasetUpdateForm } from './updateform'
 
 interface SharedResourceTableProps {
   resourceType: 'model' | 'dataset' | 'sharefile'
-  apiShareDatasetwithUser: (ud: UserDataset) => Promise<AxiosResponse<IResponse<string>>>
-  apiShareDatasetwithQueue: (qd: QueueDataset) => Promise<AxiosResponse<IResponse<string>>>
-  apiCancelDatasetSharewithUser: (
-    csu: cancelSharedUserResp
-  ) => Promise<AxiosResponse<IResponse<string>>>
-  apiCancelDatasetSharewithQueue: (
-    csq: cancelSharedQueueResp
-  ) => Promise<AxiosResponse<IResponse<string>>>
-  apiDatasetDelete: (datasetID: number) => Promise<AxiosResponse<IResponse<string>>>
+  apiShareDatasetwithUser: (ud: UserDataset) => Promise<IResponse<string>>
+  apiShareDatasetwithQueue: (qd: QueueDataset) => Promise<IResponse<string>>
+  apiCancelDatasetSharewithUser: (csu: cancelSharedUserResp) => Promise<IResponse<string>>
+  apiCancelDatasetSharewithQueue: (csq: cancelSharedQueueResp) => Promise<IResponse<string>>
+  apiDatasetDelete: (datasetID: number) => Promise<IResponse<string>>
 }
 
 export function SharedResourceTable({
@@ -104,7 +104,7 @@ export function SharedResourceTable({
   const navigate = useNavigate()
   const datasetId = id ? parseInt(id, 10) : 0
   const setBreadcrumb = useBreadcrumb()
-  const user = useAtomValue(globalUserInfo)
+  const user = useAtomValue(atomUserInfo)
   const isAdminMode = useIsAdmin()
   const dataTypeLabel = (() => {
     switch (resourceType) {
@@ -121,18 +121,18 @@ export function SharedResourceTable({
   const userDatasetData = useQuery({
     queryKey: ['data', 'userdataset', datasetId],
     queryFn: () => apiListUsersInDataset(datasetId),
-    select: (res) => res.data.data,
+    select: (res) => res.data,
   })
   const queueDatasetData = useQuery({
     queryKey: ['data', 'queuedataset', datasetId],
     queryFn: () => apiListQueuesInDataset(datasetId),
-    select: (res) => res.data.data,
+    select: (res) => res.data,
   })
   const queryClient = useQueryClient()
   const query = useQuery({
     queryKey: ['data', 'datasetByID', datasetId],
     queryFn: () => apiGetDatasetByID(datasetId),
-    select: (res) => res.data.data[0],
+    select: (res) => res.data[0],
   })
   const [pathname, setPathname] = useState<string>('')
 
@@ -155,7 +155,7 @@ export function SharedResourceTable({
     queryFn: () => apiGetDatasetFiles(datasetId, pathname),
     select: (res) => {
       return (
-        res.data.data
+        res.data
           ?.map((r) => {
             return {
               name: r.name,
@@ -192,7 +192,7 @@ export function SharedResourceTable({
   const { mutate: deleteDataset } = useMutation({
     mutationFn: (datasetID: number) => apiDatasetDelete(datasetID),
     onSuccess: () => {
-      navigate(-1)
+      navigate({ to: '..' })
       toast.success(t('sharedResource.deletedSuccess', { type: dataTypeLabel }))
     },
     onError: () => {

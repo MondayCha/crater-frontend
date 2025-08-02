@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { AlertTriangle, Trash2, X } from 'lucide-react'
 import { type FC } from 'react'
+
+import { Button } from '@/components/ui/button'
 import {
   DialogClose,
   DialogDescription,
@@ -22,8 +24,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Trash2, X, AlertTriangle } from 'lucide-react'
 
 interface DeleteDialogProps {
   imageLinks: string[]

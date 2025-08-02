@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { apiGet, apiPost, apiPut } from '@/services/client'
 
-import instance, { VERSION } from '../axios'
 import { IResponse } from '../types'
 
 export enum LabelType {
@@ -32,16 +32,16 @@ export interface LabelInfo {
 }
 
 export const apiNodeLabelsList = () => {
-  return instance.get<IResponse<LabelInfo[]>>(`${VERSION}/labels`)
+  return apiGet<IResponse<LabelInfo[]>>(`/labels`)
 }
 
 export const apiNodeLabelsUpdate = (id: number, name: string, priority: number) => {
-  return instance.put<IResponse<LabelInfo>>(`${VERSION}/admin/labels/${id}`, {
+  return apiPut<IResponse<LabelInfo>>(`/admin/labels/${id}`, {
     name,
     priority,
   })
 }
 
 export const apiNodeLabelsNvidiaSync = () => {
-  return instance.post<IResponse<never>>(`${VERSION}/admin/labels/sync/nvidia`)
+  return apiPost<IResponse<never>>(`/admin/labels/sync/nvidia`)
 }

@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { GridIcon } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
-import { GridIcon } from 'lucide-react'
 
 export const NothingCore = ({ title, className }: { title?: string; className?: string }) => {
   return (

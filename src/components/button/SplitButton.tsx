@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { ChevronDownIcon } from 'lucide-react'
+import { ReactNode, useEffect } from 'react'
+import { useLocalStorage } from 'usehooks-ts'
 
+import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,11 +27,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Button } from '@/components/ui/button'
-import { ChevronDownIcon } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
-import { useLocalStorage } from 'usehooks-ts'
-import { ReactNode, useEffect } from 'react'
 
 export interface SplitButtonItem {
   key: string

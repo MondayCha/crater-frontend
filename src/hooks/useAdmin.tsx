@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { useLocation } from 'react-router-dom'
+import { useLocation } from '@tanstack/react-router'
 
 /**
  * useIsAdmin is a custom hook that checks if the current path is an admin view.

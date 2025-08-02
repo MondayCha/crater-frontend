@@ -13,16 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { useMutation, useQuery } from '@tanstack/react-query'
+import { useAtomValue } from 'jotai'
+import { AlertTriangle, Key, RefreshCw, SailboatIcon } from 'lucide-react'
 import { type FC, useState } from 'react'
-import { Button } from '@/components/ui/button'
-import {
-  apiGetHarborIP,
-  apiUserGetCredential,
-  ProjectCredentialResponse,
-} from '@/services/api/imagepack'
 import { toast } from 'sonner'
+
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+
+import { CopyableCommand } from '@/components/codeblock/CopyableCommand'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -33,20 +42,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui-custom/alert-dialog'
-import { Key, AlertTriangle, RefreshCw, SailboatIcon } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+
 import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
-import { globalUserInfo } from '@/utils/store'
-import { useAtomValue } from 'jotai'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { CopyableCommand } from '@/components/codeblock/CopyableCommand'
-import { Badge } from '@/components/ui/badge'
+  ProjectCredentialResponse,
+  apiGetHarborIP,
+  apiUserGetCredential,
+} from '@/services/api/imagepack'
+
+import { atomUserInfo } from '@/utils/store'
 
 interface UserHarborCredentialsDialogProps {
   isDialogOpen: boolean
@@ -59,7 +62,7 @@ export const UserHarborCredentialsDialog: FC<UserHarborCredentialsDialogProps> =
 }) => {
   const [credentials, setCredentials] = useState<ProjectCredentialResponse | null>(null)
   const [showConfirmation, setShowConfirmation] = useState(false)
-  const user = useAtomValue(globalUserInfo)
+  const user = useAtomValue(atomUserInfo)
   const { mutate: getProjectCredential } = useMutation({
     mutationFn: () => apiUserGetCredential(),
     onSuccess: async (data) => {
@@ -71,7 +74,7 @@ export const UserHarborCredentialsDialog: FC<UserHarborCredentialsDialogProps> =
   const harborIP = useQuery({
     queryKey: ['harbor', 'ip'],
     queryFn: () => apiGetHarborIP(),
-    select: (res) => res.data.data,
+    select: (res) => res.data,
   })
   const handleResetClick = () => {
     setShowConfirmation(true)

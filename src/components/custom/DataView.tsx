@@ -13,24 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 // i18n-processed-v1.1.0
-import { useTranslation } from 'react-i18next'
-import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { Button } from '@/components/ui/button'
-import { IDataset } from '@/services/api/dataset'
-import DocsButton from '@/components/button/DocsButton'
 import { DataCreateForm } from '@/pages/Portal/Data/CreateForm'
-import { IResponse } from '@/services/types'
 import DataList from '@/pages/Portal/Data/DataList'
-import { AxiosResponse } from 'axios'
-import SandwichSheet from '@/components/sheet/SandwichSheet'
+import { useQuery } from '@tanstack/react-query'
 import { PlusIcon } from 'lucide-react'
+import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+
+import { Button } from '@/components/ui/button'
+
+import DocsButton from '@/components/button/DocsButton'
+import SandwichSheet from '@/components/sheet/SandwichSheet'
+
+import { IDataset } from '@/services/api/dataset'
+import { IResponse } from '@/services/types'
 
 interface DatesetTableProps {
   sourceType?: 'dataset' | 'model' | 'sharefile'
-  apiGetDataset: () => Promise<AxiosResponse<IResponse<IDataset[]>>>
+  apiGetDataset: () => Promise<IResponse<IDataset[]>>
 }
 
 export function DataView({ apiGetDataset, sourceType }: DatesetTableProps) {
@@ -38,7 +39,7 @@ export function DataView({ apiGetDataset, sourceType }: DatesetTableProps) {
   const data = useQuery({
     queryKey: ['data', 'mydataset'],
     queryFn: () => apiGetDataset(),
-    select: (res) => res.data.data,
+    select: (res) => res.data,
   })
 
   const sourceTypeMap = {

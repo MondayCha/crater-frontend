@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { format } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
 import { LockIcon } from 'lucide-react'
+
 import TooltipLink from '@/components/label/TooltipLink'
-import { getJobStateType, IJobInfo, JobStatus } from '@/services/api/vcjob'
+
+import { IJobInfo, JobStatus, getJobStateType } from '@/services/api/vcjob'
+
 import TipBadge from '../badge/TipBadge'
 
 interface JobNameCellProps {

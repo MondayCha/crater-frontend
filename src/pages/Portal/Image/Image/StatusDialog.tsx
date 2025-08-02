@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { Check, Globe, Lock, X } from 'lucide-react'
 import { type FC } from 'react'
+
+import { Button } from '@/components/ui/button'
 import {
   DialogClose,
   DialogDescription,
@@ -22,10 +24,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Check, Globe, Lock, X } from 'lucide-react'
+
 import VisibilityBadge, { Visibility } from '@/components/badge/VisibilityBadge'
+
 import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
 
 interface StatusDialogProps {
   imageLink: string

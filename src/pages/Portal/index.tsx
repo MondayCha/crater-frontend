@@ -13,56 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 // i18n-processed-v1.1.0 (no translatable strings)
-import { Navigate, RouteObject } from 'react-router-dom'
-import DashboardLayout from '@/components/layout/Dashboard'
 import {
   BarChartBigIcon,
   BoxIcon,
   DatabaseIcon,
   FlaskConicalIcon,
-  SettingsIcon,
-  SquareChartGanttIcon,
-  ShoppingBagIcon,
   FolderIcon,
+  SettingsIcon,
+  ShoppingBagIcon,
+  SquareChartGanttIcon,
 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import { Navigate, RouteObject } from 'react-router-dom'
+
+import DashboardLayout from '@/components/layout/Dashboard'
+import NotFound from '@/components/layout/NotFound'
+import { NavGroupProps } from '@/components/sidebar/types'
+
+import AuthedRouter from './AuthedRouter'
+import { datasetRoutes, modelRoutes, shareFileRoutes } from './Data'
 import batchRoutes from './Job/Batch'
 import interactiveRoutes from './Job/Interactive'
-import { datasetRoutes, modelRoutes, shareFileRoutes } from './Data'
-import { NavGroupProps } from '@/components/sidebar/types'
-import AuthedRouter from './AuthedRouter'
-import NotFound from '@/components/layout/NotFound'
 import UserSettings from './Setting/UserSetting'
-import AssignmentTemplateList from './Job/Store'
-import NvidiaOverview from '@/components/monitor/NvidiaOverview'
-import ResourseOverview from '@/components/monitor/ResourceOverview'
-import NetworkOverview from '@/components/monitor/NetworkOverview'
-import UserDetail from '@/components/custom/UserDetail'
-import { useTranslation } from 'react-i18next'
 
 const portalRoutes: RouteObject[] = [
-  {
-    path: 'overview/*',
-    lazy: () => import('./Overview'),
-  },
-  {
-    path: 'monitor',
-    children: [
-      {
-        path: 'gpu',
-        element: <NvidiaOverview />,
-      },
-      {
-        path: 'node',
-        element: <ResourseOverview />,
-      },
-      {
-        path: 'network',
-        element: <NetworkOverview />,
-      },
-    ],
-  },
   {
     path: 'job',
     children: [
@@ -75,10 +50,6 @@ const portalRoutes: RouteObject[] = [
         children: batchRoutes,
       },
     ],
-  },
-  {
-    path: 'modal',
-    element: <AssignmentTemplateList />,
   },
   {
     path: 'image',
@@ -124,15 +95,6 @@ const portalRoutes: RouteObject[] = [
     children: [
       {
         path: 'member',
-      },
-    ],
-  },
-  {
-    path: 'user/*',
-    children: [
-      {
-        path: ':name',
-        element: <UserDetail />,
       },
     ],
   },

@@ -13,19 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Link, linkOptions } from '@tanstack/react-router'
+import { useAtomValue } from 'jotai'
 
 import { IUserInfo } from '@/services/api/vcjob'
-import TooltipLink from './TooltipLink'
+
 import useIsAdmin from '@/hooks/useAdmin'
-import { cn } from '@/lib/utils'
-import { useAtomValue } from 'jotai'
-import { globalHideUsername } from '@/utils/store'
+
 import { getUserPseudonym } from '@/utils/pseudonym'
+import { globalHideUsername } from '@/utils/store'
+
+import { cn } from '@/lib/utils'
+
+import SimpleTooltip from './simple-tooltip'
+
+const adminUserLinkOptions = linkOptions({
+  to: '/admin/users/$name',
+  params: { name: '' },
+  search: { tab: '' },
+})
+
+const portalUserLinkOptions = linkOptions({
+  to: '/portal/users/$name',
+  params: { name: '' },
+  search: { tab: '' },
+})
 
 const UserLabel = ({ info, className }: { info: IUserInfo; className?: string }) => {
   const hideUsername = useAtomValue(globalHideUsername)
   const isAdminMode = useIsAdmin()
-  const prefix = isAdminMode ? 'admin/user' : 'portal/user'
 
   // 根据 hideUsername 状态决定显示真实名称还是假名
   const displayName = hideUsername
@@ -33,9 +49,7 @@ const UserLabel = ({ info, className }: { info: IUserInfo; className?: string })
     : info.nickname || info.username
 
   return (
-    <TooltipLink
-      name={<span className={cn('truncate text-sm font-normal', className)}>{displayName}</span>}
-      to={`/${prefix}/${info.username}`}
+    <SimpleTooltip
       tooltip={
         <p>
           查看{displayName}
@@ -45,7 +59,15 @@ const UserLabel = ({ info, className }: { info: IUserInfo; className?: string })
           信息
         </p>
       }
-    />
+    >
+      <Link
+        {...(isAdminMode ? adminUserLinkOptions : portalUserLinkOptions)}
+        params={{ name: info.username }}
+        search={{ tab: 'gpu' }}
+      >
+        <span className={cn('truncate text-sm font-normal', className)}>{displayName}</span>
+      </Link>
+    </SimpleTooltip>
   )
 }
 

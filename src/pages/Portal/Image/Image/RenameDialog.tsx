@@ -13,8 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Check, Pencil, X } from 'lucide-react'
 import { type FC } from 'react'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+
 import { Button } from '@/components/ui/button'
 import {
   DialogClose,
@@ -23,11 +27,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Check, Pencil, X } from 'lucide-react'
-import { Input } from '@/components/ui/input'
-import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
 import {
   Form,
   FormControl,
@@ -36,6 +35,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 
 interface RenameDialogProps {
   imageDescription: string

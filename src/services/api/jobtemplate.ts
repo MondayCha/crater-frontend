@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import instance, { VERSION } from '../axios'
+import { apiDelete, apiGet, apiPost, apiPut } from '@/services/client'
 import { IResponse } from '@/services/types'
+
 import { IUserInfo } from './vcjob'
+
 export interface JobTemplate {
   id: number
   name: string
@@ -33,17 +34,17 @@ export interface JobTemplateReq {
   template: string
 }
 export const listJobTemplate = () => {
-  return instance.get<IResponse<JobTemplate[]>>(VERSION + `/jobtemplate/list`)
+  return apiGet<IResponse<JobTemplate[]>>(`/jobtemplate/list`)
 }
 export const createJobTemplate = (data: JobTemplateReq) => {
-  return instance.post<IResponse<string>>(VERSION + `/jobtemplate/create`, data)
+  return apiPost<IResponse<string>>(`/jobtemplate/create`, data)
 }
 export const getJobTemplate = (id: number) => {
-  return instance.get<IResponse<JobTemplate>>(VERSION + `/jobtemplate/${id}`)
+  return apiGet<IResponse<JobTemplate>>(`/jobtemplate/${id}`)
 }
 export const deleteJobTemplate = (id: number) => {
-  return instance.delete<IResponse<string>>(VERSION + `/jobtemplate/delete/${id}`)
+  return apiDelete<IResponse<string>>(`/jobtemplate/delete/${id}`)
 }
 export const updateJobTemplate = (data: JobTemplateReq & { id: number }) => {
-  return instance.put<IResponse<string>>(VERSION + `/jobtemplate/update/${data.id}`, data)
+  return apiPut<IResponse<string>>(`/jobtemplate/update/${data.id}`, data)
 }

@@ -13,79 +13,82 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { DataTableToolbarConfig } from '@/components/custom/DataTable/DataTableToolbar'
+import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { type FC, useState } from 'react'
 import { ColumnDef } from '@tanstack/react-table'
-import { DataTableColumnHeader } from '@/components/custom/DataTable/DataTableColumnHeader'
-import { DataTable } from '@/components/custom/DataTable'
-import { Button } from '@/components/ui/button'
-import { ImageUploadForm } from './UploadForm'
-import { TimeDistance } from '@/components/custom/TimeDistance'
+import { useAtomValue } from 'jotai'
 import {
-  getHeader,
-  apiUserListImage,
-  apiUserChangeImagePublicStatus,
-  ImageInfoResponse,
-  apiUserChangeImageDescription,
-  ImageLinkPair,
-  apiUserDeleteImageList,
-  apiUserChangeImageTaskType,
-  UpdateDescription,
-  UpdateTaskType,
-  ListImageResponse,
-  UpdateImageTag,
-  apiUserUpdateImageTags,
-} from '@/services/api/imagepack'
-import { logger } from '@/utils/loglevel'
+  AlertTriangle,
+  CheckCheck,
+  CopyIcon,
+  Globe,
+  ImportIcon,
+  ListCheck,
+  ListTodo,
+  Lock,
+  SquareCheckBig,
+  Tag,
+  Tags,
+  Trash2Icon,
+} from 'lucide-react'
+import { type FC, useState } from 'react'
 import { toast } from 'sonner'
+
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import {
-  CheckCheck,
-  Globe,
-  Lock,
-  ListCheck,
-  Tag,
-  Trash2Icon,
-  AlertTriangle,
-  SquareCheckBig,
-  CopyIcon,
-  ImportIcon,
-  Tags,
-  ListTodo,
-} from 'lucide-react'
-import { useAtomValue } from 'jotai'
-import { globalUserInfo } from '@/utils/store'
-import ImageLabel from '@/components/label/ImageLabel'
-import {
   DropdownMenu,
-  DropdownMenuTrigger,
   DropdownMenuContent,
-  DropdownMenuLabel,
   DropdownMenuItem,
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
-  DropdownMenuSubContent,
+  DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { DotsHorizontalIcon } from '@radix-ui/react-icons'
-import { JobType } from '@/services/api/vcjob'
-import { AxiosResponse } from 'axios'
-import { IResponse } from '@/services/types'
-import VisibilityBadge, { Visibility, visibilityTypes } from '@/components/badge/VisibilityBadge'
-import { ValidDialog } from './ValidDialog'
-import { StatusDialog } from './StatusDialog'
-import { RenameDialog } from './RenameDialog'
-import { DeleteDialog } from './DeleteDialog'
-import UserLabel from '@/components/label/UserLabel'
-import { TagsDialog } from './TagsDialog'
-import TooltipLink from '@/components/label/TooltipLink'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
+
+import VisibilityBadge, { Visibility, visibilityTypes } from '@/components/badge/VisibilityBadge'
+import { DataTable } from '@/components/custom/DataTable'
+import { DataTableColumnHeader } from '@/components/custom/DataTable/DataTableColumnHeader'
+import { DataTableToolbarConfig } from '@/components/custom/DataTable/DataTableToolbar'
+import { TimeDistance } from '@/components/custom/TimeDistance'
+import ImageLabel from '@/components/label/ImageLabel'
+import TooltipLink from '@/components/label/TooltipLink'
+import UserLabel from '@/components/label/UserLabel'
+
+import {
+  ImageInfoResponse,
+  ImageLinkPair,
+  ListImageResponse,
+  UpdateDescription,
+  UpdateImageTag,
+  UpdateTaskType,
+  apiUserChangeImageDescription,
+  apiUserChangeImagePublicStatus,
+  apiUserChangeImageTaskType,
+  apiUserDeleteImageList,
+  apiUserListImage,
+  apiUserUpdateImageTags,
+  getHeader,
+} from '@/services/api/imagepack'
+import { JobType } from '@/services/api/vcjob'
+import { IResponse } from '@/services/types'
+
+import { logger } from '@/utils/loglevel'
+import { atomUserInfo } from '@/utils/store'
+
+import { DeleteDialog } from './DeleteDialog'
+import { RenameDialog } from './RenameDialog'
 import { ImageShareSheet } from './ShareImageSheet'
-import { Badge } from '@/components/ui/badge'
+import { StatusDialog } from './StatusDialog'
+import { TagsDialog } from './TagsDialog'
+import { ImageUploadForm } from './UploadForm'
+import { ValidDialog } from './ValidDialog'
 
 const toolbarConfig: DataTableToolbarConfig = {
   globalSearch: {
@@ -123,11 +126,11 @@ export const Component: FC = () => {
 }
 
 interface ImageListTableProps {
-  apiListImage: () => Promise<AxiosResponse<IResponse<ListImageResponse>>>
-  apiDeleteImageList: (idList: number[]) => Promise<AxiosResponse<IResponse<string>>>
-  apiChangeImagePublicStatus: (id: number) => Promise<AxiosResponse<IResponse<string>>>
-  apiChangeImageDescription: (data: UpdateDescription) => Promise<AxiosResponse<IResponse<string>>>
-  apiChangeImageTaskType: (data: UpdateTaskType) => Promise<AxiosResponse<IResponse<string>>>
+  apiListImage: () => Promise<IResponse<ListImageResponse>>
+  apiDeleteImageList: (idList: number[]) => Promise<IResponse<string>>
+  apiChangeImagePublicStatus: (id: number) => Promise<IResponse<string>>
+  apiChangeImageDescription: (data: UpdateDescription) => Promise<IResponse<string>>
+  apiChangeImageTaskType: (data: UpdateTaskType) => Promise<IResponse<string>>
   isAdminMode: boolean
 }
 
@@ -144,12 +147,12 @@ export const ImageListTable: FC<ImageListTableProps> = ({
   const [openCheckDialog, setCheckOpenDialog] = useState(false)
   const [selectedLinkPairs, setSelectedLinkPairs] = useState<ImageLinkPair[]>([])
 
-  const user = useAtomValue(globalUserInfo)
+  const user = useAtomValue(atomUserInfo)
   const imageInfo = useQuery({
     queryKey: ['imagelink', 'list'],
     queryFn: () => apiListImage(),
     select: (res) =>
-      res.data.data.imageList.map((i) => ({
+      res.data.imageList.map((i) => ({
         ...i,
         visibility: i.imageShareStatus,
         isPublic: i.imageShareStatus == Visibility.Public,

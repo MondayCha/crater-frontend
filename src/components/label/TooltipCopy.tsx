@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Copy } from 'lucide-react'
+
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+
+import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard'
 
 import { cn } from '@/lib/utils'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard'
-import { Copy } from 'lucide-react'
 
 interface TooltipCopyProps {
   name: string

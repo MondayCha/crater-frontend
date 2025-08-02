@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { useQuery } from '@tanstack/react-query'
-import { apiGetNodes, NodeRole } from '@/services/api/cluster'
+
+import { NodeRole, apiGetNodes } from '@/services/api/cluster'
 
 const useNodeQuery = (onlyWorker?: boolean) => {
   return useQuery({
     queryKey: ['overview', 'nodes'],
     queryFn: apiGetNodes,
     select: (res) =>
-      res.data.data
+      res.data
         .sort((a, b) => a.name.localeCompare(b.name))
         .sort((a, b) => {
           // 按照 vendor 排序，优先 hygon => shenwei => yitian => 空字符串

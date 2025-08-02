@@ -13,19 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 // i18n-processed-v1.1.0
 // Modified code
-import { useTranslation } from 'react-i18next'
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import FormLabelMust from '@/components/form/FormLabelMust'
-import Combobox, { ComboboxItem } from '@/components/form/Combobox'
-import ImageItem from '@/components/form/ImageItem'
-import { FieldPath, FieldValues, UseFormReturn } from 'react-hook-form'
-import useImageQuery from '@/hooks/query/useImageQuery'
-import { JobType } from '@/services/api/vcjob'
 import { useCallback, useMemo, useState } from 'react'
+import { FieldPath, FieldValues, UseFormReturn } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
+
 import { Badge } from '@/components/ui/badge'
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+
+import Combobox, { ComboboxItem } from '@/components/form/Combobox'
+import FormLabelMust from '@/components/form/FormLabelMust'
+import ImageItem from '@/components/form/ImageItem'
+
+import { JobType } from '@/services/api/vcjob'
+
+import useImageQuery from '@/hooks/query/useImageQuery'
 
 interface ImageFormFieldProps<T extends FieldValues> {
   form: UseFormReturn<T>

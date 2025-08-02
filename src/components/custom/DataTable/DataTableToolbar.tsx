@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 // i18n-processed-v1.1.0
-import { useTranslation } from 'react-i18next'
 import { Table } from '@tanstack/react-table'
+import { SearchIcon, XIcon } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { DataTableViewOptions } from './DataTableViewOptions'
+
 import { DataTableFacetedFilter, DataTableFacetedFilterOption } from './DataTableFacetedFilter'
-import { SearchIcon, XIcon } from 'lucide-react'
+import { DataTableViewOptions } from './DataTableViewOptions'
 
 export type DataTableToolbarConfig = {
   filterOptions: readonly {

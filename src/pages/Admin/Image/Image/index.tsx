@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 // i18n-processed-v1.1.0 (no translatable strings)
 import { ImageListTable } from '@/pages/Portal/Image/Image'
+import { type FC } from 'react'
+
 import {
   apiAdminChangeImageDescription,
   apiAdminChangeImagePublicStatus,
@@ -23,7 +24,6 @@ import {
   apiAdminDeleteImageList,
   apiAdminListImage,
 } from '@/services/api/admin/imagepack'
-import { type FC } from 'react'
 
 export const Component: FC = () => {
   return (

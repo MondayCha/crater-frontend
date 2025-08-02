@@ -13,44 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 // i18n-processed-v1.1.0
 // Modified code
-import { useTranslation } from 'react-i18next'
-import { Button } from '@/components/ui/button'
-import { DotsHorizontalIcon } from '@radix-ui/react-icons'
-import {
-  Form,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  FormControl,
-} from '@/components/ui/form'
-import FormLabelMust from '@/components/form/FormLabelMust'
-import { DialogTrigger, Dialog, DialogClose } from '@/components/ui/dialog'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { DotsHorizontalIcon } from '@radix-ui/react-icons'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useParams } from '@tanstack/react-router'
+import { ColumnDef } from '@tanstack/react-table'
+import { Briefcase, Calendar, Layers, UserRoundPlusIcon, Users } from 'lucide-react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import {
-  SelectValue,
-  SelectTrigger,
-  SelectItem,
-  SelectContent,
-  Select,
-  SelectGroup,
-} from '@/components/ui/select'
-import {
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogHeader,
-  AlertDialogCancel,
-  AlertDialogAction,
-  AlertDialogFooter,
-  AlertDialogContent,
-  AlertDialog,
-  AlertDialogTrigger,
-} from '@/components/ui-custom/alert-dialog'
+import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
+import { z } from 'zod'
+
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogClose, DialogTrigger } from '@/components/ui/dialog'
+import { DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -64,39 +43,64 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useParams } from 'react-router-dom'
-import { DialogFooter, DialogHeader, DialogTitle, DialogContent } from '@/components/ui/dialog'
 import {
-  IUserInAccount,
-  apiAddUser,
-  apiUpdateUser,
-  apiRemoveUser,
-  apiUserInProjectList,
-  apiUserOutOfProjectList,
-  Access,
-  IUserInAccountCreate,
-  apiAccountGet,
-} from '@/services/api/account'
-import { ColumnDef } from '@tanstack/react-table'
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Skeleton } from '@/components/ui/skeleton'
+
+import ResourceBadges from '@/components/badge/ResourceBadges'
+import UserAccessBadge from '@/components/badge/UserAccessBadge'
+import UserRoleBadge, { userRoles } from '@/components/badge/UserRoleBadge'
 import { DataTable } from '@/components/custom/DataTable'
 import { DataTableColumnHeader } from '@/components/custom/DataTable/DataTableColumnHeader'
 import { DataTableToolbarConfig } from '@/components/custom/DataTable/DataTableToolbar'
-import { z } from 'zod'
-import useBreadcrumb from '@/hooks/useBreadcrumb'
-import UserRoleBadge, { userRoles } from '@/components/badge/UserRoleBadge'
-import UserAccessBadge from '@/components/badge/UserAccessBadge'
-import ResourceBadges from '@/components/badge/ResourceBadges'
-import { Briefcase, Calendar, Layers, UserRoundPlusIcon, Users } from 'lucide-react'
-import Quota from './AccountQuota'
-import { toast } from 'sonner'
 import SelectBox from '@/components/custom/SelectBox'
+import { TimeDistance } from '@/components/custom/TimeDistance'
+import FormLabelMust from '@/components/form/FormLabelMust'
 import UserLabel from '@/components/label/UserLabel'
 import { DetailPage } from '@/components/layout/DetailPage'
-import { TimeDistance } from '@/components/custom/TimeDistance'
-import { Skeleton } from '@/components/ui/skeleton'
 import DetailTitle from '@/components/layout/DetailTitle'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui-custom/alert-dialog'
+
+import {
+  Access,
+  IUserInAccount,
+  IUserInAccountCreate,
+  apiAccountGet,
+  apiAddUser,
+  apiRemoveUser,
+  apiUpdateUser,
+  apiUserInProjectList,
+  apiUserOutOfProjectList,
+} from '@/services/api/account'
+
+import useBreadcrumb from '@/hooks/useBreadcrumb'
+
+import Quota from './AccountQuota'
 
 export const Component = () => {
   const { t } = useTranslation()
@@ -158,13 +162,13 @@ export const Component = () => {
   const accountUsersQuery = useQuery({
     queryKey: ['account', pid, 'users'],
     queryFn: () => apiUserInProjectList(pid),
-    select: (res) => res.data.data,
+    select: (res) => res.data,
   })
 
   const { data: accountInfo, isLoading: isLoadingAccount } = useQuery({
     queryKey: ['admin', 'accounts', pid],
     queryFn: () => apiAccountGet(pid),
-    select: (res) => res.data.data,
+    select: (res) => res.data,
     enabled: !!pid,
   })
 
@@ -210,7 +214,7 @@ export const Component = () => {
   const { data: usersOutOfProjectData, isLoading: isLoadingUsersOutOfProject } = useQuery({
     queryKey: ['usersOutOfProject', pid],
     queryFn: () => apiUserOutOfProjectList(pid),
-    select: (res) => res.data.data,
+    select: (res) => res.data,
   })
 
   useEffect(() => {

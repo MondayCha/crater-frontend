@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { RouteObject } from 'react-router-dom'
-import { apiGetDataset } from '@/services/api/dataset'
+
 import { DataView } from '@/components/custom/DataView'
+
+import { apiGetDataset } from '@/services/api/dataset'
 
 const datasetRoutes: RouteObject[] = [
   {

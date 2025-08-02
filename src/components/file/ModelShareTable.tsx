@@ -13,29 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 // i18n-processed-v1.1.0 (no translatable strings)
-import { AxiosResponse } from 'axios'
-import { IResponse } from '@/services/types'
 import {
-  UserDataset,
   QueueDataset,
-  cancelSharedUserResp,
+  UserDataset,
   cancelSharedQueueResp,
+  cancelSharedUserResp,
 } from '@/services/api/dataset'
+import { IResponse } from '@/services/types'
+
 import { SharedResourceTable } from './SharedResourceTable'
 
 interface DatesetShareTableProps {
   resourceType: 'model' | 'dataset' | 'sharefile'
-  apiShareDatasetwithUser: (ud: UserDataset) => Promise<AxiosResponse<IResponse<string>>>
-  apiShareDatasetwithQueue: (qd: QueueDataset) => Promise<AxiosResponse<IResponse<string>>>
-  apiCancelDatasetSharewithUser: (
-    csu: cancelSharedUserResp
-  ) => Promise<AxiosResponse<IResponse<string>>>
-  apiCancelDatasetSharewithQueue: (
-    csq: cancelSharedQueueResp
-  ) => Promise<AxiosResponse<IResponse<string>>>
-  apiDatasetDelete: (datasetID: number) => Promise<AxiosResponse<IResponse<string>>>
+  apiShareDatasetwithUser: (ud: UserDataset) => Promise<IResponse<string>>
+  apiShareDatasetwithQueue: (qd: QueueDataset) => Promise<IResponse<string>>
+  apiCancelDatasetSharewithUser: (csu: cancelSharedUserResp) => Promise<IResponse<string>>
+  apiCancelDatasetSharewithQueue: (csq: cancelSharedQueueResp) => Promise<IResponse<string>>
+  apiDatasetDelete: (datasetID: number) => Promise<IResponse<string>>
 }
 
 export function ModelShareTable(props: DatesetShareTableProps) {

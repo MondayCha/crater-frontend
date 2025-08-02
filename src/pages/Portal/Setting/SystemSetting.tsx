@@ -13,17 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 // i18n-processed-v1.1.0
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useAtom } from 'jotai'
+import { FileCogIcon } from 'lucide-react'
+import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
+import { z } from 'zod'
+
+import { Button } from '@/components/ui/button'
 import {
   Card,
-  CardTitle,
   CardContent,
+  CardDescription,
   CardFooter,
   CardHeader,
-  CardDescription,
+  CardTitle,
 } from '@/components/ui/card'
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import {
   Select,
   SelectContent,
@@ -31,16 +39,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { z } from 'zod'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { FormField, FormItem, FormControl, FormMessage, Form } from '@/components/ui/form'
-import { Button } from '@/components/ui/button'
-import { toast } from 'sonner'
-import { useAtom } from 'jotai'
-import { globalSettings } from '@/utils/store'
-import { FileCogIcon } from 'lucide-react'
+
 import WarningAlert from '@/components/custom/WarningAlert'
+
+import { globalSettings } from '@/utils/store'
 
 function SystemSetting() {
   const { t } = useTranslation()

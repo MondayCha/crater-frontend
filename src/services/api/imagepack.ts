@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import instance, { VERSION } from '@/services/axios'
-import { IResponse } from '@/services/types'
 import {
   CheckCircledIcon,
   CircleIcon,
@@ -23,9 +20,14 @@ import {
   CrossCircledIcon,
   StopwatchIcon,
 } from '@radix-ui/react-icons'
-import { IUserInfo, JobType } from './vcjob'
-import { IUserAttributes } from './admin/user'
+
 import { Visibility } from '@/components/badge/VisibilityBadge'
+
+import { apiDelete, apiGet, apiPost } from '@/services/client'
+import { IResponse } from '@/services/types'
+
+import { IUserAttributes } from './admin/user'
+import { IUserInfo, JobType } from './vcjob'
 
 export type ListKanikoResponse = {
   kanikoList: KanikoInfoResponse[]
@@ -331,7 +333,7 @@ export const ImageDefaultArchs = [
 
 export async function FetchAllUniqueImageTagObjects(): Promise<{ value: string }[]> {
   const res = await apiUserListImage()
-  const imageList = res.data.data.imageList ?? []
+  const imageList = res.data.imageList ?? []
   // 用 ImageDefaultTags 初始化 Set
   const tagSet = new Set<string>(ImageDefaultTags.map((item) => item.value))
   const lowerCaseTagSet = new Set<string>(ImageDefaultTags.map((item) => item.value.toLowerCase()))
@@ -386,99 +388,92 @@ export function parseImageLink(imageLink: string) {
   return { imageName: '', imageTag: '' }
 }
 
-export const apiUserListKaniko = () =>
-  instance.get<IResponse<ListKanikoResponse>>(`${VERSION}/images/kaniko`)
+export const apiUserListKaniko = () => apiGet<IResponse<ListKanikoResponse>>(`/images/kaniko`)
 
 export const apiUserCreateKaniko = async (imagepack: KanikoCreate) => {
-  const response = await instance.post<IResponse<string>>(VERSION + '/images/kaniko', imagepack)
+  const response = await apiPost<IResponse<string>>('/images/kaniko', imagepack)
   return response.data
 }
 
 export const apiUserCreateByDockerfile = async (imageDockerfile: DockerfileCreate) => {
-  const response = await instance.post<IResponse<string>>(
-    VERSION + '/images/dockerfile',
-    imageDockerfile
-  )
+  const response = await apiPost<IResponse<string>>('/images/dockerfile', imageDockerfile)
   return response.data
 }
 
 export const apiUserCreateByEnvd = async (envdInfo: EnvdCreate) => {
-  const response = await instance.post<IResponse<string>>(VERSION + '/images/envd', envdInfo)
+  const response = await apiPost<IResponse<string>>('/images/envd', envdInfo)
   return response.data
 }
 
 export const apiUserDeleteKaniko = (id: number) =>
-  instance.delete<IResponse<string>>(VERSION + `/images/kaniko/${id}`)
+  apiDelete<IResponse<string>>(`/images/kaniko/${id}`)
 
 export const apiUserDeleteKanikoList = (idList: number[]) =>
-  instance.post<IResponse<string>>(`${VERSION}/images/deletekaniko`, {
+  apiPost<IResponse<string>>(`/images/deletekaniko`, {
     idList,
   })
 
 export const apiUserGetKaniko = (name: string) =>
-  instance.get<IResponse<KanikoInfoResponse>>(`${VERSION}/images/getbyname?name=${name}`)
+  apiGet<IResponse<KanikoInfoResponse>>(`/images/getbyname?name=${name}`)
 
-export const apiUserListImage = () =>
-  instance.get<IResponse<ListImageResponse>>(`${VERSION}/images/image`)
+export const apiUserListImage = () => apiGet<IResponse<ListImageResponse>>(`/images/image`)
 
 export const apiUserChangeImagePublicStatus = (id: number) =>
-  instance.post<IResponse<string>>(VERSION + `/images/change/${id}`)
+  apiPost<IResponse<string>>(`/images/change/${id}`)
 
 export const apiUserUploadImage = async (imageupload: ImageUpload) => {
-  const response = await instance.post<IResponse<string>>(VERSION + '/images/image', imageupload)
+  const response = await apiPost<IResponse<string>>('/images/image', imageupload)
   return response.data
 }
 
 export const apiUserDeleteImage = (id: number) =>
-  instance.delete<IResponse<string>>(VERSION + `/images/image/${id}`)
+  apiDelete<IResponse<string>>(`/images/image/${id}`)
 
 export const apiUserDeleteImageList = (idList: number[]) =>
-  instance.post<IResponse<string>>(`${VERSION}/images/deleteimage`, { idList })
+  apiPost<IResponse<string>>(`/images/deleteimage`, { idList })
 
 export const apiUserGetCredential = () =>
-  instance.post<IResponse<ProjectCredentialResponse>>(`${VERSION}/images/credential`)
+  apiPost<IResponse<ProjectCredentialResponse>>(`/images/credential`)
 
-export const apiUserGetQuota = () =>
-  instance.get<IResponse<ProjectDetailResponse>>(`${VERSION}/images/quota`)
+export const apiUserGetQuota = () => apiGet<IResponse<ProjectDetailResponse>>(`/images/quota`)
 
 export const apiUserChangeImageDescription = (data: UpdateDescription) =>
-  instance.post<IResponse<string>>(`${VERSION}/images/description`, data)
+  apiPost<IResponse<string>>(`/images/description`, data)
 
 export const apiUserChangeImageTaskType = (data: UpdateTaskType) =>
-  instance.post<IResponse<string>>(`${VERSION}/images/type`, data)
+  apiPost<IResponse<string>>(`/images/type`, data)
 
 export const apiUserCheckImageValid = (linkPairs: ImageLinkPairs) =>
-  instance.post<IResponse<ImageLinkPairs>>(`${VERSION}/images/valid`, linkPairs)
+  apiPost<IResponse<ImageLinkPairs>>(`/images/valid`, linkPairs)
 
-export const apiGetHarborIP = () =>
-  instance.get<IResponse<HarborIPData>>(`${VERSION}/images/harbor`)
+export const apiGetHarborIP = () => apiGet<IResponse<HarborIPData>>(`/images/harbor`)
 
 export const apiUserUpdateImageTags = (data: UpdateImageTag) =>
-  instance.post<IResponse<string>>(`${VERSION}/images/tags`, data)
+  apiPost<IResponse<string>>(`/images/tags`, data)
 
 export const apiUserGetImageTemplate = (name: string) =>
-  instance.get<IResponse<string>>(`${VERSION}/images/template?name=${name}`)
+  apiGet<IResponse<string>>(`/images/template?name=${name}`)
 
 export const apiUserGetImageShareObjects = (data: GetImageShare) =>
-  instance.get<IResponse<ImageShareObjectsResponse>>(`${VERSION}/images/share`, {
-    params: data,
+  apiGet<IResponse<ImageShareObjectsResponse>>(`/images/share`, {
+    searchParams: { ...data },
   })
 
 export const apiUserAddImageShare = (data: AddImageShare) =>
-  instance.post<IResponse<string>>(`${VERSION}/images/share`, data)
+  apiPost<IResponse<string>>(`/images/share`, data)
 
 export const apiUserDeleteImageShare = (data: DeleteImageShare) =>
-  instance.delete<IResponse<string>>(`${VERSION}/images/share`, { data })
+  apiDelete<IResponse<string>>(`/images/share`, { data })
 
 export const apiUserSearchUser = (data: SearchUngrantedUsers) =>
-  instance.get<IResponse<SearchUngrantedUserResponse>>(`${VERSION}/images/user`, {
-    params: data,
+  apiGet<IResponse<SearchUngrantedUserResponse>>(`/images/user`, {
+    searchParams: { ...data },
   })
 
 export const apiUserGetUngrantedAccounts = (data: GetUngrantedAccounts) =>
-  instance.get<IResponse<GetUngrantedAccountsResponse>>(`${VERSION}/images/account`, {
-    params: data,
+  apiGet<IResponse<GetUngrantedAccountsResponse>>(`/images/account`, {
+    searchParams: { ...data },
   })
 
 export const apiGetCudaBaseImages = () =>
-  instance.get<IResponse<CudaBaseImageResponse>>(`${VERSION}/images/cudabaseimage`)
+  apiGet<IResponse<CudaBaseImageResponse>>(`/images/cudabaseimage`)

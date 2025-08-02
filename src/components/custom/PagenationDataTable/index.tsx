@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 // i18n-processed-v1.1.0 (no translatable strings)
 import {
   ColumnDef,
@@ -30,10 +29,12 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { DataTableToolbar, DataTableToolbarConfig } from './DataTableToolbar'
 import { useEffect, useState } from 'react'
+
 import { cn } from '@/lib/utils'
+
 import DataTableCard from './DataTableCard'
+import { DataTableToolbar, DataTableToolbarConfig } from './DataTableToolbar'
 
 interface DataTableProps<TData, TValue> extends React.HTMLAttributes<HTMLDivElement> {
   columns: ColumnDef<TData, TValue>[]

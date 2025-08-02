@@ -13,14 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import CardTitle from '@/components/label/CardTitle'
-import { HammerIcon, LayoutGridIcon, PickaxeIcon } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useNavigate } from '@tanstack/react-router'
+import { useAtomValue } from 'jotai'
+import { HammerIcon, LayoutGridIcon, PickaxeIcon } from 'lucide-react'
+import { CirclePlus, CirclePlusIcon, XIcon } from 'lucide-react'
+import { useState } from 'react'
+import { useFieldArray, useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
+
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import {
   Form,
   FormControl,
@@ -31,39 +36,38 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { useForm, useFieldArray } from 'react-hook-form'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { apiTensorflowCreate } from '@/services/api/vcjob'
-import { toast } from 'sonner'
-import { CirclePlus, CirclePlusIcon, XIcon } from 'lucide-react'
+import { Textarea } from '@/components/ui/textarea'
+
+import LoadableButton from '@/components/button/LoadableButton'
+import { VolumeMountsCard } from '@/components/form/DataMountFormField'
+import { EnvFormCard } from '@/components/form/EnvFormField'
+import FormExportButton from '@/components/form/FormExportButton'
+import FormImportButton from '@/components/form/FormImportButton'
 import FormLabelMust from '@/components/form/FormLabelMust'
+import { ImageFormField } from '@/components/form/ImageFormField'
+import { OtherOptionsFormCard } from '@/components/form/OtherOptionsFormField'
+import { ResourceFormFields } from '@/components/form/ResourceFormField'
+import { TemplateInfo } from '@/components/form/TemplateInfo'
+import { MetadataFormTensorflow } from '@/components/form/types'
+import CardTitle from '@/components/label/CardTitle'
+import PageTitle from '@/components/layout/PageTitle'
+
+import { apiTensorflowCreate } from '@/services/api/vcjob'
+
 import {
-  volumeMountsSchema,
-  envsSchema,
-  taskSchema,
-  convertToResourceList,
-  nodeSelectorSchema,
   VolumeMountType,
+  convertToResourceList,
+  defaultResource,
+  envsSchema,
   exportToJsonString,
   forwardsSchema,
-  defaultResource,
+  nodeSelectorSchema,
+  taskSchema,
+  volumeMountsSchema,
 } from '@/utils/form'
-import { useState } from 'react'
-import { useAtomValue } from 'jotai'
-import { globalUserInfo } from '@/utils/store'
-import { Textarea } from '@/components/ui/textarea'
-import { ImageFormField } from '@/components/form/ImageFormField'
-import { VolumeMountsCard } from '@/components/form/DataMountFormField'
-import { MetadataFormTensorflow } from '@/components/form/types'
-import { OtherOptionsFormCard } from '@/components/form/OtherOptionsFormField'
-import PageTitle from '@/components/layout/PageTitle'
-import FormImportButton from '@/components/form/FormImportButton'
-import FormExportButton from '@/components/form/FormExportButton'
-import { PublishConfigForm } from './Publish'
-import LoadableButton from '@/components/button/LoadableButton'
-import { ResourceFormFields } from '@/components/form/ResourceFormField'
-import { EnvFormCard } from '@/components/form/EnvFormField'
-import { TemplateInfo } from '@/components/form/TemplateInfo'
+import { atomUserInfo } from '@/utils/store'
+
+import { PublishConfigForm } from '../../../../components/job/publish'
 
 const markdown = `# Env User Guidance
 
@@ -236,7 +240,7 @@ export const Component = () => {
   const [otherOpen, setOtherOpen] = useState<boolean>(false)
   const navigate = useNavigate()
   const queryClient = useQueryClient()
-  const user = useAtomValue(globalUserInfo)
+  const user = useAtomValue(atomUserInfo)
 
   const { mutate: createTask, isPending } = useMutation({
     mutationFn: (values: FormSchema) =>
@@ -284,7 +288,7 @@ export const Component = () => {
         queryClient.invalidateQueries({ queryKey: ['aitask', 'stats'] }),
       ])
       toast.success(`作业 ${taskname} 创建成功`)
-      navigate(-1)
+      navigate({ to: '..' })
     },
   })
 
@@ -311,7 +315,7 @@ export const Component = () => {
         {
           type: VolumeMountType.FileType,
           subPath: `user`,
-          mountPath: `/home/${user.name}`,
+          mountPath: `/home/${user?.name}`,
         },
       ],
       envs: [],
@@ -493,7 +497,7 @@ export const Component = () => {
                         <Input {...field} className="font-mono" />
                       </FormControl>
                       <FormDescription>
-                        用户文件夹位于 <span className="font-mono">/home/{user.name}</span>
+                        用户文件夹位于 <span className="font-mono">/home/{user?.name}</span>
                         ，重启后数据不会丢失
                       </FormDescription>
                       <FormMessage />
@@ -624,7 +628,7 @@ export const Component = () => {
                         <Input {...field} className="font-mono" />
                       </FormControl>
                       <FormDescription>
-                        用户文件夹位于 <span className="font-mono">/home/{user.name}</span>
+                        用户文件夹位于 <span className="font-mono">/home/{user?.name}</span>
                         ，重启后数据不会丢失
                       </FormDescription>
                       <FormMessage />

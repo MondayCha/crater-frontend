@@ -13,14 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { useQuery } from '@tanstack/react-query'
-import { type FC, useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { apiUserGetQuota } from '@/services/api/imagepack'
 import { BoxIcon, HardDriveIcon, KeyIcon, UserRoundIcon } from 'lucide-react'
+import { type FC, useState } from 'react'
+
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+
 import LoadingCircleIcon from '@/components/icon/LoadingCircleIcon'
+
+import { apiUserGetQuota } from '@/services/api/imagepack'
+
 import { UserHarborCredentialsDialog } from './UserHarborCredentialsDialog'
 
 interface ProjectDetailProps {
@@ -32,7 +35,7 @@ export const ProjectDetail: FC<ProjectDetailProps> = ({ successImageNumber }) =>
   const quotaQuery = useQuery({
     queryKey: ['imagepack', 'quota'],
     queryFn: () => apiUserGetQuota(),
-    select: (res) => res.data.data,
+    select: (res) => res.data,
   })
   return (
     <>

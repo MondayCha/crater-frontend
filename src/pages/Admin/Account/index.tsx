@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 // i18n-processed-v1.1.0
-import { useTranslation } from 'react-i18next'
-import { IAccount } from '@/services/api/account'
 import { useState } from 'react'
-import { AccountTable } from './account-table'
-import { AccountForm } from './account-form-component'
+import { useTranslation } from 'react-i18next'
+
 import SandwichSheet from '@/components/sheet/SandwichSheet'
+
+import { IAccount } from '@/services/api/account'
+
+import { AccountForm } from './account-form-component'
+import { AccountTable } from './account-table'
 
 export const Component = () => {
   const { t } = useTranslation()

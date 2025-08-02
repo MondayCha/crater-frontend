@@ -13,39 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 // i18n-processed-v1.1.0
 // Modified code
-import { useTranslation } from 'react-i18next'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery } from '@tanstack/react-query'
-import { useForm } from 'react-hook-form'
-import * as z from 'zod'
-import { Button } from '@/components/ui/button'
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
-import { Card, CardContent, CardFooter } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { useEffect, useState } from 'react'
-import { toast } from 'sonner'
-import { useAtom } from 'jotai'
-import { globalUserInfo } from '@/utils/store'
 import { useMutation } from '@tanstack/react-query'
-import { IUserAttributes } from '@/services/api/admin/user'
-import {
-  apiContextUpdateUserAttributes,
-  apiSendVerificationEmail,
-  apiVerifyEmailCode,
-} from '@/services/api/context'
+import { useAtom } from 'jotai'
 import { MailPlusIcon, UserRoundCogIcon } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
+import * as z from 'zod'
+
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -55,12 +35,36 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardFooter } from '@/components/ui/card'
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from '@/components/ui/input-otp'
+
 import LoadableButton from '@/components/button/LoadableButton'
-import Quota from '../Job/Interactive/Quota'
-import PageTitle from '@/components/layout/PageTitle'
-import { apiUserEmailVerified } from '@/services/api/user'
 import { TimeDistance } from '@/components/custom/TimeDistance'
+import PageTitle from '@/components/layout/PageTitle'
+
+import { IUserAttributes } from '@/services/api/admin/user'
+import {
+  apiContextUpdateUserAttributes,
+  apiSendVerificationEmail,
+  apiVerifyEmailCode,
+} from '@/services/api/context'
+import { apiUserEmailVerified } from '@/services/api/user'
+
+import { atomUserInfo } from '@/utils/store'
+
+import Quota from '../Job/Interactive/Quota'
 
 // Moved Zod schema to component
 function getFormSchema(t: (key: string) => string) {
@@ -85,9 +89,9 @@ function getFormSchema(t: (key: string) => string) {
 
 export default function UserSettings() {
   const { t } = useTranslation()
-  const [user, setUser] = useAtom(globalUserInfo)
-  const [avatarPreview, setAvatarPreview] = useState(user.avatar || '')
-  const [originalEmail, setOriginalEmail] = useState(user.email || '')
+  const [user, setUser] = useAtom(atomUserInfo)
+  const [avatarPreview, setAvatarPreview] = useState(user?.avatar || '')
+  const [originalEmail, setOriginalEmail] = useState(user?.email || '')
   const [isEmailVerified, setIsEmailVerified] = useState(true)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isVerifyError, setIsVerifyError] = useState(false)
@@ -98,13 +102,13 @@ export default function UserSettings() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      nickname: user.nickname,
-      email: user.email || null,
-      teacher: user.teacher || null,
-      group: user.group || null,
-      expiredAt: user.expiredAt || null,
-      phone: user.phone || null,
-      avatar: user.avatar || null,
+      nickname: user?.nickname,
+      email: user?.email || null,
+      teacher: user?.teacher || null,
+      group: user?.group || null,
+      expiredAt: user?.expiredAt || null,
+      phone: user?.phone || null,
+      avatar: user?.avatar || null,
     },
   })
 
@@ -118,7 +122,7 @@ export default function UserSettings() {
     mutationFn: (values: IUserAttributes) => apiContextUpdateUserAttributes(values),
     onSuccess: (_data, values) => {
       toast.success(t('userSettings.updateSuccess'))
-      setUser((prev) => ({ ...prev, ...values }))
+      setUser((prev) => ({ ...prev, ...values, space: prev?.space || '' }))
     },
   })
 
@@ -162,15 +166,15 @@ export default function UserSettings() {
     }
 
     updateUser({
-      id: user.id,
-      name: user.name,
-      email: values.email ?? user.email,
-      nickname: values.nickname ?? user.nickname,
-      teacher: values.teacher ?? user.teacher,
-      group: values.group ?? user.group,
-      expiredAt: values.expiredAt ?? user.expiredAt,
-      phone: values.phone ?? user.phone,
-      avatar: values.avatar ?? user.avatar,
+      id: user?.id || 0,
+      name: user?.name || '',
+      email: values.email ?? user?.email,
+      nickname: values.nickname ?? user?.nickname,
+      teacher: values.teacher ?? user?.teacher,
+      group: values.group ?? user?.group,
+      expiredAt: values.expiredAt ?? user?.expiredAt,
+      phone: values.phone ?? user?.phone,
+      avatar: values.avatar ?? user?.avatar,
     })
   }
 
@@ -222,7 +226,7 @@ export default function UserSettings() {
                   />
                   <Avatar className="h-20 w-20">
                     <AvatarImage src={avatarPreview} alt="Avatar preview" />
-                    <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                    <AvatarFallback>{user?.name.charAt(0)}</AvatarFallback>
                   </Avatar>
                 </div>
                 <FormField

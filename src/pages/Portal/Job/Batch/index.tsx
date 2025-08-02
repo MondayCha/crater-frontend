@@ -13,19 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { RouteObject } from 'react-router-dom'
-import VolcanoOverview from './Volcano/Overview'
-import { globalJobUrl, store } from '@/utils/store'
-import ColocateOverview from './Colocate/Overview'
-import { Base } from '../Detail/Base'
 
-const jobType = store.get(globalJobUrl)
+import { Base } from '../../../../components/job/detail'
+
 const batchRoutes: RouteObject[] = [
-  {
-    index: true,
-    element: jobType === 'aijobs' ? <ColocateOverview /> : <VolcanoOverview />,
-  },
   {
     path: ':name',
     element: <Base />,

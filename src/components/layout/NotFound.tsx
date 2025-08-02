@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useNavigate } from '@tanstack/react-router'
 
 import { Button } from '@/components/ui/button'
-import { useNavigate } from 'react-router-dom'
 
 export default function NotFound() {
   const navigate = useNavigate()
@@ -32,7 +32,7 @@ export default function NotFound() {
           <Button variant="outline" onClick={() => history.go(-1)}>
             返回上级
           </Button>
-          <Button onClick={() => navigate('/')}>返回首页</Button>
+          <Button onClick={() => navigate({ to: '/' })}>返回首页</Button>
         </div>
       </div>
     </div>

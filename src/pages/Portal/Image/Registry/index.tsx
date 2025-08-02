@@ -13,28 +13,46 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { DataTableToolbarConfig } from '@/components/custom/DataTable/DataTableToolbar'
+import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { type FC, useState } from 'react'
 import { ColumnDef } from '@tanstack/react-table'
-import { DataTableColumnHeader } from '@/components/custom/DataTable/DataTableColumnHeader'
-import { DataTable } from '@/components/custom/DataTable'
-import { Button } from '@/components/ui/button'
-import { TimeDistance } from '@/components/custom/TimeDistance'
+import { useAtomValue } from 'jotai'
 import {
-  apiUserDeleteKanikoList,
-  apiUserListKaniko,
-  getHeader,
-  ImageLinkPair,
-  ImagePackSource,
-  ImagePackStatus,
-  imagepackStatuses,
-  KanikoInfoResponse,
-  ListKanikoResponse,
-} from '@/services/api/imagepack'
-import { logger } from '@/utils/loglevel'
+  AlertTriangle,
+  CheckCheck,
+  InfoIcon,
+  PackagePlusIcon,
+  RedoDotIcon,
+  SquareCheckBig,
+  Trash2Icon,
+} from 'lucide-react'
+import { type FC, useState } from 'react'
+import { useNavigate, useRoutes } from 'react-router-dom'
 import { toast } from 'sonner'
+
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent } from '@/components/ui/dialog'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { Separator } from '@/components/ui/separator'
+
+import ImagePhaseBadge from '@/components/badge/ImagePhaseBadge'
+import DocsButton from '@/components/button/DocsButton'
+import SplitButton from '@/components/button/SplitButton'
+import { DataTable } from '@/components/custom/DataTable'
+import { DataTableColumnHeader } from '@/components/custom/DataTable/DataTableColumnHeader'
+import { DataTableToolbarConfig } from '@/components/custom/DataTable/DataTableToolbar'
+import { TimeDistance } from '@/components/custom/TimeDistance'
+import ImageLabel from '@/components/label/ImageLabel'
+import TooltipLink from '@/components/label/TooltipLink'
+import UserLabel from '@/components/label/UserLabel'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -46,46 +64,31 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui-custom/alert-dialog'
+
 import {
-  InfoIcon,
-  PackagePlusIcon,
-  Trash2Icon,
-  AlertTriangle,
-  CheckCheck,
-  SquareCheckBig,
-  RedoDotIcon,
-} from 'lucide-react'
-import { useNavigate, useRoutes } from 'react-router-dom'
-import KanikoDetail from '../Info'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { DotsHorizontalIcon } from '@radix-ui/react-icons'
-import DocsButton from '@/components/button/DocsButton'
-import { PipAptSheet } from './PipAptSheet'
-import { DockerfileSheet } from './DockerfileSheet'
-import SplitButton from '@/components/button/SplitButton'
-import TooltipLink from '@/components/label/TooltipLink'
-import ImageLabel from '@/components/label/ImageLabel'
-import ImagePhaseBadge from '@/components/badge/ImagePhaseBadge'
-import { formatBytes } from '@/utils/formatter'
+  ImageLinkPair,
+  ImagePackSource,
+  ImagePackStatus,
+  KanikoInfoResponse,
+  ListKanikoResponse,
+  apiUserDeleteKanikoList,
+  apiUserListKaniko,
+  getHeader,
+  imagepackStatuses,
+} from '@/services/api/imagepack'
 import { IResponse } from '@/services/types'
-import { AxiosResponse } from 'axios'
-import { globalUserInfo } from '@/utils/store'
-import { useAtomValue } from 'jotai'
+
+import { formatBytes } from '@/utils/formatter'
+import { logger } from '@/utils/loglevel'
+import { atomUserInfo } from '@/utils/store'
+
 import { ValidDialog } from '../Image/ValidDialog'
-import UserLabel from '@/components/label/UserLabel'
-import { EnvdSheet } from './EnvdSheet'
+import KanikoDetail from '../Info'
+import { DockerfileSheet } from './DockerfileSheet'
 import { EnvdRawSheet } from './EnvdRawSheet'
+import { EnvdSheet } from './EnvdSheet'
+import { PipAptSheet } from './PipAptSheet'
 import { ProjectDetail } from './ProjectDetail'
-import { Dialog, DialogContent } from '@/components/ui/dialog'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Separator } from '@/components/ui/separator'
-import { Badge } from '@/components/ui/badge'
 
 const toolbarConfig: DataTableToolbarConfig = {
   filterInput: {
@@ -103,8 +106,8 @@ const toolbarConfig: DataTableToolbarConfig = {
 }
 
 interface KanikoListTableProps {
-  apiListKaniko: () => Promise<AxiosResponse<IResponse<ListKanikoResponse>>>
-  apiDeleteKanikoList: (idList: number[]) => Promise<AxiosResponse<IResponse<string>>>
+  apiListKaniko: () => Promise<IResponse<ListKanikoResponse>>
+  apiDeleteKanikoList: (idList: number[]) => Promise<IResponse<string>>
   isAdminMode: boolean
 }
 
@@ -121,14 +124,14 @@ export const KanikoListTable: FC<KanikoListTableProps> = ({
   const [imagePackName, setImagePackName] = useState<string>('')
   const navigate = useNavigate()
   const [openCheckDialog, setCheckOpenDialog] = useState(false)
-  const user = useAtomValue(globalUserInfo)
+  const user = useAtomValue(atomUserInfo)
   const [selectedLinkPairs, setSelectedLinkPairs] = useState<ImageLinkPair[]>([])
 
   const imageQuery = useQuery({
     queryKey: ['imagepack', 'list'],
     queryFn: () => apiListKaniko(),
     select: (res) =>
-      res.data.data.kanikoList.map((i) => ({
+      res.data.kanikoList.map((i) => ({
         ...i,
         image: `${i.imageLink} (${i.description})`,
       })),
@@ -240,7 +243,7 @@ export const KanikoListTable: FC<KanikoListTableProps> = ({
                   <DropdownMenuLabel className="text-muted-foreground text-xs">
                     操作
                   </DropdownMenuLabel>
-                  <DropdownMenuItem onClick={() => navigate(`${kanikoInfo.imagepackName}`)}>
+                  <DropdownMenuItem onClick={() => navigate({ to: `${kanikoInfo.imagepackName}` })}>
                     <InfoIcon className="text-highlight-emerald" />
                     详情
                   </DropdownMenuItem>

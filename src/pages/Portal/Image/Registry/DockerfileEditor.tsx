@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 // TODO: https://github.com/suren-atoyan/monaco-react?tab=readme-ov-file#use-monaco-editor-as-an-npm-package
-import { useTheme } from '@/utils/theme'
 import { Editor } from '@monaco-editor/react'
+
+import { useTheme } from '@/utils/theme'
 
 interface DockerfileEditorProps {
   value: string

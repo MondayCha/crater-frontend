@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 // i18n-processed-v1.1.0 (no translatable strings)
 import KanikoDetail from '@/pages/Portal/Image/Info'
 import { KanikoListTable } from '@/pages/Portal/Image/Registry'
-import { apiAdminDeleteKanikoList, apiAdminListKaniko } from '@/services/api/admin/imagepack'
 import { type FC } from 'react'
 import { useRoutes } from 'react-router-dom'
+
+import { apiAdminDeleteKanikoList, apiAdminListKaniko } from '@/services/api/admin/imagepack'
 
 export const Component: FC = () => {
   const routes = useRoutes([

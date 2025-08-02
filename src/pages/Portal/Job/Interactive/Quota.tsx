@@ -13,16 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { REFETCH_INTERVAL } from '@/config/task'
+import { useQuery } from '@tanstack/react-query'
+import { useAtomValue } from 'jotai'
+import { CpuIcon, GpuIcon, MemoryStickIcon, NetworkIcon } from 'lucide-react'
+import { useMemo } from 'react'
 
 import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
+
 import { ResourceResp, apiContextQuota } from '@/services/api/context'
-import { globalAccount } from '@/utils/store'
-import { useQuery } from '@tanstack/react-query'
-import { CpuIcon, GpuIcon, MemoryStickIcon, NetworkIcon } from 'lucide-react'
-import { useAtomValue } from 'jotai'
-import { REFETCH_INTERVAL } from '@/config/task'
-import { useMemo } from 'react'
+
+import { atomUserContext } from '@/utils/store'
+
 import { cn } from '@/lib/utils'
 
 const showAmount = (allocated: number, label?: string) => {
@@ -94,12 +97,12 @@ const QuotaCard = ({
 }
 
 const Quota = () => {
-  const account = useAtomValue(globalAccount)
+  const context = useAtomValue(atomUserContext)
   const { data: quota } = useQuery({
     queryKey: ['context', 'quota'],
     queryFn: apiContextQuota,
-    select: (res) => res.data.data,
-    enabled: account.queue !== '',
+    select: (res) => res.data,
+    enabled: context?.queue !== '',
     refetchInterval: REFETCH_INTERVAL,
   })
 

@@ -13,8 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { motion } from 'framer-motion'
+import { useAtomValue } from 'jotai'
+import {
+  ArrowDownAZIcon,
+  ArrowDownZAIcon,
+  BotIcon,
+  DatabaseZapIcon,
+  EllipsisVerticalIcon,
+  PackageIcon,
+  SearchIcon,
+} from 'lucide-react'
+import { Trash2Icon } from 'lucide-react'
 import { useMemo, useState } from 'react'
+
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+// 导入所需组件
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 //import { Link } from "react-router-dom";
 import {
@@ -25,32 +47,14 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
-import {
-  ArrowDownAZIcon,
-  ArrowDownZAIcon,
-  BotIcon,
-  DatabaseZapIcon,
-  EllipsisVerticalIcon,
-  PackageIcon,
-  SearchIcon,
-} from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
-//import TooltipButton from "@/components/custom/TooltipButton";
-import TooltipLink from '@/components/label/TooltipLink'
-import PageTitle from '@/components/layout/PageTitle'
+
 import TipBadge from '@/components/badge/TipBadge'
 import { TimeDistance } from '@/components/custom/TimeDistance'
-import { motion } from 'framer-motion'
-import { globalUserInfo } from '@/utils/store'
-import { useAtomValue } from 'jotai'
-// 导入所需组件
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+//import TooltipButton from "@/components/custom/TooltipButton";
+import TooltipLink from '@/components/label/TooltipLink'
+import UserLabel from '@/components/label/UserLabel'
+import PageTitle from '@/components/layout/PageTitle'
+import Nothing from '@/components/placeholder/Nothing'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -62,11 +66,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui-custom/alert-dialog'
-import { Trash2Icon } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+
 import { IUserInfo } from '@/services/api/vcjob'
-import UserLabel from '@/components/label/UserLabel'
-import Nothing from '@/components/placeholder/Nothing'
+
+import { atomUserInfo } from '@/utils/store'
 
 export interface DataItem {
   id: number
@@ -91,7 +94,7 @@ const getNewJobUrl = (jobType: JobType) => {
     case JobType.Jupyter: // 直接匹配枚举值
       return 'job/inter/new-jupyter-vcjobs'
     case JobType.Custom:
-      return 'job/batch/new-vcjobs'
+      return '/portal/jobs/custom/new/volcano-job'
     case JobType.Tensorflow:
       return 'job/batch/new-tensorflow'
     case JobType.Pytorch:
@@ -134,7 +137,7 @@ export default function DataList({
   const [modelType, setModelType] = useState('所有标签')
   const [searchTerm, setSearchTerm] = useState('')
   const [ownerFilter, setOwnerFilter] = useState('所有') // 修改默认值为"所有"
-  const user = useAtomValue(globalUserInfo)
+  const user = useAtomValue(atomUserInfo)
 
   const tags = useMemo(() => {
     const tags = new Set<string>()
@@ -159,8 +162,8 @@ export default function DataList({
       ownerFilter === '所有'
         ? true
         : ownerFilter === '我的'
-          ? user.name === item.owner.username
-          : user.name !== item.owner.username
+          ? user?.name === item.owner.username
+          : user?.name !== item.owner.username
     )
 
   return (
@@ -261,7 +264,7 @@ export default function DataList({
                   </div>
                   {title === '作业模板' ? (
                     <TooltipLink
-                      to={`/portal/${getJobUrlFromTemplate(item.template || '')}?fromTemplate=${item.id}`}
+                      to={`${getJobUrlFromTemplate(item.template || '')}?fromTemplate=${item.id}`}
                       name={<p className="text-left">{item.name}</p>}
                       tooltip={`查看${title}详情`}
                       className="font-semibold"
@@ -275,7 +278,7 @@ export default function DataList({
                     />
                   )}
                 </div>
-                {user.name === item.owner.username && (
+                {user?.name === item.owner.username && (
                   <AlertDialog>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>

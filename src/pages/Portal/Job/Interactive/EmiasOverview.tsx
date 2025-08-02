@@ -13,8 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { REFETCH_INTERVAL } from '@/config/task'
+import { getHeader } from '@/pages/Portal/Job/statuses'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { Link } from '@tanstack/react-router'
 import { ColumnDef } from '@tanstack/react-table'
+import { useAtomValue } from 'jotai'
+import { ExternalLink, SquareIcon, Trash2Icon } from 'lucide-react'
+import { useMemo } from 'react'
+import { toast } from 'sonner'
+
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+
+import JobTypeLabel from '@/components/badge/JobTypeBadge'
+import ResourceBadges from '@/components/badge/ResourceBadges'
+import SplitLinkButton from '@/components/button/SplitLinkButton'
+import { DataTable } from '@/components/custom/DataTable'
+import { DataTableColumnHeader } from '@/components/custom/DataTable/DataTableColumnHeader'
+import { DataTableToolbarConfig } from '@/components/custom/DataTable/DataTableToolbar'
+import { TimeDistance } from '@/components/custom/TimeDistance'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,28 +44,14 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui-custom/alert-dialog'
-import { Button } from '@/components/ui/button'
-import { useMemo } from 'react'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { apiJobDelete, apiJobBatchList, apiJupyterTokenGet } from '@/services/api/vcjob'
-import { DataTable } from '@/components/custom/DataTable'
-import { DataTableColumnHeader } from '@/components/custom/DataTable/DataTableColumnHeader'
-import { Link } from 'react-router-dom'
-import { TimeDistance } from '@/components/custom/TimeDistance'
-import { toast } from 'sonner'
-import { getHeader } from '@/pages/Portal/Job/statuses'
-import { logger } from '@/utils/loglevel'
-import Quota from './Quota'
-import SplitLinkButton from '@/components/button/SplitLinkButton'
+
+import { apiJobBatchList, apiJobDelete, apiJupyterTokenGet } from '@/services/api/vcjob'
 import { IJobInfo, JobType } from '@/services/api/vcjob'
-import { REFETCH_INTERVAL } from '@/config/task'
-import ResourceBadges from '@/components/badge/ResourceBadges'
-import JobTypeLabel from '@/components/badge/JobTypeBadge'
-import { globalJobUrl, globalUserInfo } from '@/utils/store'
-import { useAtomValue } from 'jotai'
-import { DataTableToolbarConfig } from '@/components/custom/DataTable/DataTableToolbar'
-import { Badge } from '@/components/ui/badge'
-import { ExternalLink, SquareIcon, Trash2Icon } from 'lucide-react'
+
+import { logger } from '@/utils/loglevel'
+import { atomUserInfo, globalJobUrl } from '@/utils/store'
+
+import Quota from './Quota'
 
 export const priorities = [
   {
@@ -163,13 +167,13 @@ interface ColocateJobInfo extends IJobInfo {
 const ColocateOverview = () => {
   const queryClient = useQueryClient()
   const jobType = useAtomValue(globalJobUrl)
-  const userInfo = useAtomValue(globalUserInfo)
+  const userInfo = useAtomValue(atomUserInfo)
 
   const batchQuery = useQuery({
     queryKey: ['job', 'interactive'],
     queryFn: apiJobBatchList,
     select: (res) =>
-      res.data.data
+      res.data
         .filter((task) => task.jobType === JobType.Jupyter)
         .sort((a, b) => b.createdAt.localeCompare(a.createdAt)) as unknown as ColocateJobInfo[],
     refetchInterval: REFETCH_INTERVAL,
@@ -178,7 +182,7 @@ const ColocateOverview = () => {
   const { mutate: getPortToken } = useMutation({
     mutationFn: (jobName: string) => apiJupyterTokenGet(jobName),
     onSuccess: (res) => {
-      const data = res.data.data
+      const data = res.data
       window.open(`${data.baseURL}?token=${data.token}`, '_blank')
     },
   })
@@ -320,7 +324,7 @@ const ColocateOverview = () => {
                     getPortToken(`${jobInfo.id}`)
                   }, 500)
                 }}
-                disabled={jobInfo.status !== 'Running' || userInfo.name !== jobInfo.owner}
+                disabled={jobInfo.status !== 'Running' || userInfo?.name !== jobInfo.owner}
               >
                 <ExternalLink className="size-4" />
               </Button>
@@ -394,7 +398,7 @@ const ColocateOverview = () => {
         },
       },
     ],
-    [deleteTask, getPortToken, userInfo.name]
+    [deleteTask, getPortToken, userInfo?.name]
   )
 
   return (

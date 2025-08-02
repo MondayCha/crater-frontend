@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 // i18n-processed-v1.1.0
 // Modified code
+import { ColumnDef, Table as TableType, flexRender } from '@tanstack/react-table'
 import { useTranslation } from 'react-i18next'
+
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import {
   Table,
   TableBody,
@@ -25,10 +27,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { ColumnDef, Table as TableType, flexRender } from '@tanstack/react-table'
 
 import { DataTablePagination } from './DataTablePagination'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
 
 interface DataTableCardProps<TData, TValue> {
   table: TableType<TData>

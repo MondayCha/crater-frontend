@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { FC, ReactNode } from 'react'
-import TipBadge from '../badge/TipBadge'
+
 import { cn } from '@/lib/utils'
+
+import TipBadge from '../badge/TipBadge'
 import { CopyButton } from '../button/copy-button'
 
 interface PageTitleProps {

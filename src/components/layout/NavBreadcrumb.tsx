@@ -13,8 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { Link } from '@tanstack/react-router'
+import { useAtomValue } from 'jotai'
 import { Fragment } from 'react'
+import { useTranslation } from 'react-i18next'
+
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -23,16 +26,16 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb'
-import { useAtomValue } from 'jotai'
-import { globalBreadCrumb } from '@/utils/store'
-import { Link } from 'react-router-dom'
-import { cn } from '@/lib/utils'
+
 import useBreadcrumb from '@/hooks/useBreadcrumb'
-import { useTranslation } from 'react-i18next'
+
+import { atomBreadcrumb } from '@/utils/store'
+
+import { cn } from '@/lib/utils'
 
 export const NavBreadcrumb = ({ className }: { className: string }) => {
   useBreadcrumb()
-  const breadcrumb = useAtomValue(globalBreadCrumb)
+  const breadcrumb = useAtomValue(atomBreadcrumb)
   const { t } = useTranslation()
 
   return (

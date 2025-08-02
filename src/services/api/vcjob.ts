@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Event as KubernetesEvent } from 'kubernetes-types/core/v1'
+
+import { apiDelete, apiGet, apiPost, apiPut } from '@/services/client'
 
 import { V1ResourceList } from '@/utils/resource'
-import instance, { VERSION } from '../axios'
-import { IResponse } from '../types'
 import { globalJobUrl, store } from '@/utils/store'
+
+import { IResponse } from '../types'
 import { ImageInfoResponse } from './imagepack'
-import { Event as KubernetesEvent } from 'kubernetes-types/core/v1'
 import { TerminatedState } from './tool'
 
 const JOB_URL = store.get(globalJobUrl)
@@ -52,15 +54,15 @@ export interface IJobInfo {
   lockedTimestamp?: string
 }
 
-export const apiAdminGetJobList = (days?: number) =>
-  instance.get<IResponse<IJobInfo[]>>(`${VERSION}/admin/${JOB_URL}`, {
-    params: { days },
+export const apiAdminGetJobList = (days: number) =>
+  apiGet<IResponse<IJobInfo[]>>(`/admin/${JOB_URL}`, {
+    searchParams: { days },
   })
 
 export const apiAdminGetJobDetail = (jobName: string) =>
-  instance.get<IResponse<IJupyterDetail>>(`${VERSION}/admin/${JOB_URL}/${jobName}/detail`)
+  apiGet<IResponse<IJupyterDetail>>(`/admin/${JOB_URL}/${jobName}/detail`)
 
-export const apiJobAllList = () => instance.get<IResponse<IJobInfo[]>>(`${VERSION}/${JOB_URL}/all`)
+export const apiJobAllList = () => apiGet<IResponse<IJobInfo[]>>(`/${JOB_URL}/all`)
 
 export enum JobPhase {
   Pending = 'Pending',
@@ -127,10 +129,9 @@ export const getJobStateType = (phase: JobPhase): JobStatus => {
   return JobStatus.Unknown
 }
 
-export const apiJobBatchList = () => instance.get<IResponse<IJobInfo[]>>(`${VERSION}/${JOB_URL}`)
+export const apiJobBatchList = () => apiGet<IResponse<IJobInfo[]>>(`/${JOB_URL}`)
 
-export const apiJobInteractiveList = () =>
-  instance.get<IResponse<IJobInfo[]>>(`${VERSION}/${JOB_URL}`)
+export const apiJobInteractiveList = () => apiGet<IResponse<IJobInfo[]>>(`/${JOB_URL}`)
 
 export interface PodDetail {
   name: string
@@ -360,88 +361,58 @@ export interface ITensorflowCreate {
   forwards: Forward[]
 }
 
-export const apiJupyterCreate = async (task: IJupyterCreate) => {
-  const response = await instance.post<IResponse<string>>(`${VERSION}/${JOB_URL}/jupyter`, task)
-  return response.data
-}
+export const apiJupyterCreate = (task: IJupyterCreate) =>
+  apiPost<IResponse<string>>(`/${JOB_URL}/jupyter`, task)
 
-export const apiTrainingCreate = async (task: ITrainingCreate) => {
-  const response = await instance.post<IResponse<string>>(`${VERSION}/${JOB_URL}/training`, task)
-  return response.data
-}
+export const apiTrainingCreate = (task: ITrainingCreate) =>
+  apiPost<IResponse<string>>(`/${JOB_URL}/training`, task)
 
-export const apiSparseCreate = async (task: ISparseCreate) => {
-  const response = await instance.post<IResponse<string>>(`${VERSION}/${JOB_URL}/training`, task)
-  return response.data
-}
+export const apiSparseCreate = (task: ISparseCreate) =>
+  apiPost<IResponse<string>>(`/${JOB_URL}/training`, task)
 
-export const apiTensorflowCreate = async (task: ITensorflowCreate) => {
-  const response = await instance.post<IResponse<string>>(`${VERSION}/${JOB_URL}/tensorflow`, task)
-  return response.data
-}
+export const apiTensorflowCreate = (task: ITensorflowCreate) =>
+  apiPost<IResponse<string>>(`/${JOB_URL}/tensorflow`, task)
 
-export const apiPytorchCreate = async (task: ITensorflowCreate) => {
-  const response = await instance.post<IResponse<string>>(`${VERSION}/${JOB_URL}/pytorch`, task)
-  return response.data
-}
+export const apiPytorchCreate = (task: ITensorflowCreate) =>
+  apiPost<IResponse<string>>(`/${JOB_URL}/pytorch`, task)
 
-export const apiJobDelete = async (jobName: string) => {
-  const response = await instance.delete<IResponse<string>>(`${VERSION}/${JOB_URL}/${jobName}`)
-  return response.data
-}
+export const apiJobDelete = (jobName: string) =>
+  apiDelete<IResponse<string>>(`/${JOB_URL}/${jobName}`)
 
-export const apiJobDeleteForAdmin = async (jobName: string) => {
-  const response = await instance.delete<IResponse<string>>(
-    `${VERSION}/admin/${JOB_URL}/${jobName}`
-  )
-  return response.data
-}
+export const apiJobDeleteForAdmin = (jobName: string) =>
+  apiDelete<IResponse<string>>(`/admin/${JOB_URL}/${jobName}`)
 
-export const apiJobToggleKeepForAdmin = async (jobName: string) => {
-  const response = await instance.put<IResponse<string>>(
-    `${VERSION}/admin/operations/keep/${jobName}`
-  )
-  return response.data
-}
+export const apiJobToggleKeepForAdmin = (jobName: string) =>
+  apiPut<IResponse<string>>(`/admin/operations/keep/${jobName}`)
 
-export const apiJobUnlock = async (jobName: string) => {
-  const response = await instance.put<IResponse<string>>(
-    `${VERSION}/admin/operations/clear/locktime`,
-    { name: jobName }
-  )
-  return response.data
-}
+export const apiJobUnlock = (jobName: string) =>
+  apiPut<IResponse<string>>(`/admin/operations/clear/locktime`, {
+    name: jobName,
+  })
 
-export const apiJobLock = async (params: object) => {
-  const response = await instance.put<IResponse<string>>(
-    `${VERSION}/admin/operations/add/locktime`,
-    params
-  )
-  return response.data
-}
+export const apiJobLock = (params: object) =>
+  apiPut<IResponse<string>>(`/admin/operations/add/locktime`, params)
 
 export const apiJobGetDetail = (jobName: string) =>
-  instance.get<IResponse<IJupyterDetail>>(`${VERSION}/${JOB_URL}/${jobName}/detail`)
+  apiGet<IResponse<IJupyterDetail>>(`/${JOB_URL}/${jobName}/detail`)
 
 export const apiJobGetPods = (jobName: string) =>
-  instance.get<IResponse<PodDetail[]>>(`${VERSION}/${JOB_URL}/${jobName}/pods`)
+  apiGet<IResponse<PodDetail[]>>(`/${JOB_URL}/${jobName}/pods`)
 
 export const apiJobGetYaml = (jobName: string) =>
-  instance.get<IResponse<string>>(`${VERSION}/${JOB_URL}/${jobName}/yaml`)
+  apiGet<IResponse<string>>(`/${JOB_URL}/${jobName}/yaml`)
 
 export const apiJobGetEvent = (jobName: string) =>
-  instance.get<IResponse<KubernetesEvent[]>>(`${VERSION}/${JOB_URL}/${jobName}/event`)
+  apiGet<IResponse<KubernetesEvent[]>>(`/${JOB_URL}/${jobName}/event`)
 
 export const apiJobTemplate = (jobName: string) =>
-  instance.get<IResponse<string>>(`${VERSION}/${JOB_URL}/${jobName}/template`)
+  apiGet<IResponse<string>>(`/${JOB_URL}/${jobName}/template`)
 
 export const apiJTaskImageList = (imageTaskType: string) =>
-  instance.get<IResponse<{ images: ImageInfoResponse[] }>>(
-    `${VERSION}/images/available?type=${imageTaskType}`
-  )
+  apiGet<IResponse<{ images: ImageInfoResponse[] }>>(`/images/available?type=${imageTaskType}`)
 
 export const apiJupyterTokenGet = (jobName: string) =>
-  instance.get<
+  apiGet<
     IResponse<{
       baseURL: string
       fullURL: string
@@ -449,28 +420,17 @@ export const apiJupyterTokenGet = (jobName: string) =>
       podName: string
       namespace: string
     }>
-  >(`${VERSION}/${JOB_URL}/${jobName}/token`)
+  >(`/${JOB_URL}/${jobName}/token`)
 
 // @Router /v1/vcjobs/jupyter/{name}/snapshot [post]
-export const apiJupyterSnapshot = async (jobName: string) => {
-  const response = await instance.post<IResponse<string>>(
-    `${VERSION}/${JOB_URL}/jupyter/${jobName}/snapshot`
-  )
-  return response.data
-}
+export const apiJupyterSnapshot = (jobName: string) =>
+  apiPost<IResponse<string>>(`/${JOB_URL}/jupyter/${jobName}/snapshot`)
 
 // 开启 SSH 端口
 export const apiOpenSSH = (jobName: string) =>
-  instance.post<IResponse<SSHInfo>>(`${VERSION}/${JOB_URL}/${jobName}/ssh`)
+  apiPost<IResponse<SSHInfo>>(`/${JOB_URL}/${jobName}/ssh`)
 
-export const apiJobScheduleAdmin = async () => {
-  const response = await instance.get<IResponse<string>>(`${VERSION}/admin/operations/cronjob`)
-  return response.data
-}
-export const apiJobScheduleChangeAdmin = async (schedule: object) => {
-  const response = await instance.put<IResponse<string>>(
-    `${VERSION}/admin/operations/cronjob`,
-    schedule
-  )
-  return response.data
-}
+export const apiJobScheduleAdmin = () => apiGet<IResponse<string>>(`/admin/operations/cronjob`)
+
+export const apiJobScheduleChangeAdmin = (schedule: object) =>
+  apiPut<IResponse<string>>(`/admin/operations/cronjob`, schedule)

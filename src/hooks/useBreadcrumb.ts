@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { BreadCrumbItem, globalBreadCrumb } from '@/utils/store'
-import { getBreadcrumbByPath } from '@/utils/title'
-import { useEffect, useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation } from '@tanstack/react-router'
 import { useSetAtom } from 'jotai'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { BreadCrumbItem, atomBreadcrumb } from '@/utils/store'
+import { getBreadcrumbByPath } from '@/utils/title'
+
 const useBreadcrumb = () => {
-  const setBreadcrumb = useSetAtom(globalBreadCrumb)
+  const setBreadcrumb = useSetAtom(atomBreadcrumb)
   const location = useLocation()
   const [detail, setDetail] = useState<BreadCrumbItem[]>([])
   const { t } = useTranslation()

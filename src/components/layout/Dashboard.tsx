@@ -13,25 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { Outlet, useLocation } from 'react-router-dom'
+import { Outlet, useLocation } from '@tanstack/react-router'
 import { motion } from 'framer-motion'
-import { NavBreadcrumb } from '@/components/layout/NavBreadcrumb'
-import { useMemo } from 'react'
-import { AppSidebar } from '@/components/sidebar/app-sidebar'
-import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
-import { NavGroupProps } from '../sidebar/types'
 import { useAtomValue } from 'jotai'
-import { globalFixedLayout, globalSettings } from '@/utils/store'
-import { cn } from '@/lib/utils'
-import { Badge } from '../ui/badge'
 import { CogIcon } from 'lucide-react'
-import { WhatsNewDialog } from './WhatIsNew'
+import { useMemo } from 'react'
+
+import { Badge } from '@/components/ui/badge'
+import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
+
+import { NavBreadcrumb } from '@/components/layout/NavBreadcrumb'
+import { AppSidebar } from '@/components/sidebar/app-sidebar'
+
 import useConfigLoader from '@/hooks/useConfigLoader'
+
+import { atomFixedLayout, globalSettings } from '@/utils/store'
+
+import { cn } from '@/lib/utils'
+
+import { NavGroupProps } from '../sidebar/types'
+import { WhatsNewDialog } from './WhatIsNew'
 
 const DashboardLayout = ({ groups }: { groups: NavGroupProps[] }) => {
   const { pathname: rawPath } = useLocation()
-  const fixedLayout = useAtomValue(globalFixedLayout)
+  const fixedLayout = useAtomValue(atomFixedLayout)
   const scheduler = useAtomValue(globalSettings).scheduler
   useConfigLoader()
 

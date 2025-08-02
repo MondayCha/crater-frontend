@@ -13,9 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { PackagePlusIcon } from 'lucide-react'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+import { z } from 'zod'
+
 import {
   Form,
   FormControl,
@@ -25,33 +29,33 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import { Textarea } from '@/components/ui/textarea'
-import { z } from 'zod'
-import { toast } from 'sonner'
-import SandwichSheet, { SandwichLayout, SandwichSheetProps } from '@/components/sheet/SandwichSheet'
-import LoadableButton from '@/components/button/LoadableButton'
-import { PackagePlusIcon } from 'lucide-react'
-import FormImportButton from '@/components/form/FormImportButton'
-import FormExportButton from '@/components/form/FormExportButton'
-import { MetadataFormPipApt } from '@/components/form/types'
-import FormLabelMust from '@/components/form/FormLabelMust'
-import { JobType } from '@/services/api/vcjob'
-import Combobox from '@/components/form/Combobox'
-import ImageItem from '@/components/form/ImageItem'
-import useImageQuery from '@/hooks/query/useImageQuery'
 import { Input } from '@/components/ui/input'
-import {
-  apiUserCreateKaniko,
-  FetchAllUniqueImageTagObjects,
-  imageNameRegex,
-  ImagePackSource,
-  imageTagRegex,
-} from '@/services/api/imagepack'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { Textarea } from '@/components/ui/textarea'
+
+import LoadableButton from '@/components/button/LoadableButton'
+import Combobox from '@/components/form/Combobox'
+import FormExportButton from '@/components/form/FormExportButton'
+import FormImportButton from '@/components/form/FormImportButton'
+import FormLabelMust from '@/components/form/FormLabelMust'
+import ImageItem from '@/components/form/ImageItem'
 import { ImageSettingsFormCard } from '@/components/form/ImageSettingsFormCard'
 import { TagsInput } from '@/components/form/TagsInput'
-import { exportToJsonString } from '@/utils/form'
+import { MetadataFormPipApt } from '@/components/form/types'
+import SandwichSheet, { SandwichLayout, SandwichSheetProps } from '@/components/sheet/SandwichSheet'
+
+import {
+  FetchAllUniqueImageTagObjects,
+  ImagePackSource,
+  apiUserCreateKaniko,
+  imageNameRegex,
+  imageTagRegex,
+} from '@/services/api/imagepack'
+import { JobType } from '@/services/api/vcjob'
+
+import useImageQuery from '@/hooks/query/useImageQuery'
 import { useImageTemplateLoader } from '@/hooks/useTemplateLoader'
+
+import { exportToJsonString } from '@/utils/form'
 
 const pipAptFormSchema = z.object({
   baseImage: z.string().min(1, '基础镜像是必填项'),

@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { ReactNode } from 'react'
-import { cn } from '@/lib/utils'
 import { LucideIcon } from 'lucide-react'
+import { ReactNode } from 'react'
+
+import { cn } from '@/lib/utils'
 
 interface DetailTitleProps extends React.HTMLAttributes<HTMLDivElement> {
   title?: string

@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 // i18n-processed-v1.1.0 (no translatable strings)
-import React from 'react'
-import { buttonVariants, Button } from '../ui/button'
-import { cn } from '@/lib/utils'
 import { VariantProps } from 'class-variance-authority'
+import React from 'react'
+
+import { Button, buttonVariants } from '@/components/ui/button'
+
+import { cn } from '@/lib/utils'
 
 type LoadableButtonProps = React.ComponentProps<'button'> &
   VariantProps<typeof buttonVariants> & {

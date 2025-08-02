@@ -13,14 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import CardTitle from '@/components/label/CardTitle'
-import { CpuIcon, LayoutGridIcon } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Cross1Icon } from '@radix-ui/react-icons'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useNavigate } from '@tanstack/react-router'
+import { useAtomValue } from 'jotai'
+import { CpuIcon, LayoutGridIcon } from 'lucide-react'
+import { ChevronLeftIcon, CircleArrowDown, CircleArrowUp, CirclePlus } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { useFieldArray, useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
+
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import {
   Form,
   FormControl,
@@ -31,35 +37,33 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { useForm, useFieldArray } from 'react-hook-form'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { apiJobTemplate, apiJTaskImageList, apiSparseCreate, JobType } from '@/services/api/vcjob'
-import { cn } from '@/lib/utils'
-import { toast } from 'sonner'
-import { ChevronLeftIcon, CircleArrowDown, CircleArrowUp, CirclePlus } from 'lucide-react'
-import FormLabelMust from '@/components/form/FormLabelMust'
-import Combobox from '@/components/form/Combobox'
-import {
-  exportToJsonFile,
-  importFromJsonFile,
-  volumeMountsSchema,
-  envsSchema,
-  taskSchema,
-  convertToResourceList,
-  nodeSelectorSchema,
-  VolumeMountType,
-  forwardsSchema,
-} from '@/utils/form'
-import { useEffect, useState } from 'react'
-import { useAtomValue } from 'jotai'
-import { globalUserInfo } from '@/utils/store'
 import { Textarea } from '@/components/ui/textarea'
-import { IDlAnalyze, apiDlAnalyze } from '@/services/api/recommend/dlTask'
+
 import { ProgressBar } from '@/components/custom/ProgressBar'
-import { Cross1Icon } from '@radix-ui/react-icons'
+import Combobox from '@/components/form/Combobox'
 import { VolumeMountsCard } from '@/components/form/DataMountFormField'
-import { OtherOptionsFormCard } from '@/components/form/OtherOptionsFormField'
 import { EnvFormCard } from '@/components/form/EnvFormField'
+import FormLabelMust from '@/components/form/FormLabelMust'
+import { OtherOptionsFormCard } from '@/components/form/OtherOptionsFormField'
+import CardTitle from '@/components/label/CardTitle'
+
+import { IDlAnalyze, apiDlAnalyze } from '@/services/api/recommend/dlTask'
+import { JobType, apiJTaskImageList, apiJobTemplate, apiSparseCreate } from '@/services/api/vcjob'
+
+import {
+  VolumeMountType,
+  convertToResourceList,
+  envsSchema,
+  exportToJsonFile,
+  forwardsSchema,
+  importFromJsonFile,
+  nodeSelectorSchema,
+  taskSchema,
+  volumeMountsSchema,
+} from '@/utils/form'
+import { atomUserInfo } from '@/utils/store'
+
+import { cn } from '@/lib/utils'
 
 const VERSION = '20240528'
 const JOB_TYPE = 'single'
@@ -101,7 +105,7 @@ export const Component = () => {
   const [otherOpen, setOtherOpen] = useState<boolean>(false)
   const navigate = useNavigate()
   const queryClient = useQueryClient()
-  const user = useAtomValue(globalUserInfo)
+  const user = useAtomValue(atomUserInfo)
 
   const { mutate: createTask, isPending } = useMutation({
     mutationFn: (values: FormSchema) =>
@@ -148,14 +152,14 @@ export const Component = () => {
         queryClient.invalidateQueries({ queryKey: ['aitask', 'stats'] }),
       ])
       toast.success(`作业 ${jobName} 创建成功`)
-      navigate(-1)
+      navigate({ to: '..' })
     },
   })
   const imagesInfo = useQuery({
     queryKey: ['jupyter', 'images'],
     queryFn: () => apiJTaskImageList(JobType.Custom),
     select: (res) => {
-      return res.data.data.images.map((item) => ({
+      return res.data.images.map((item) => ({
         value: item.imageLink,
         label: item.imageLink,
       }))
@@ -188,14 +192,14 @@ export const Component = () => {
         },
         image: '',
         command: '',
-        workingDir: '/home/' + user.name,
+        workingDir: '/home/' + user?.name,
         ports: [],
       },
       volumeMounts: [
         {
           type: VolumeMountType.FileType,
           subPath: `user`,
-          mountPath: `/home/${user.name}`,
+          mountPath: `/home/${user?.name}`,
         },
       ],
       envs: [],
@@ -209,7 +213,7 @@ export const Component = () => {
   const { mutate: fetchJobTemplate } = useMutation({
     mutationFn: (jobName: string) => apiJobTemplate(jobName),
     onSuccess: (response) => {
-      const jobInfo = JSON.parse(response.data.data)
+      const jobInfo = JSON.parse(response.data)
       form.reset(jobInfo.data)
 
       if (jobInfo.data.envs.length > 0) {
@@ -257,7 +261,7 @@ export const Component = () => {
           .map((item) => parseInt(item.embeddingDim as unknown as string)),
       }),
     onSuccess: (data) => {
-      setAnalyze(data.data.data)
+      setAnalyze(data.data)
     },
   })
 
@@ -288,7 +292,7 @@ export const Component = () => {
                 size="icon"
                 type="button"
                 className="h-8 w-8"
-                onClick={() => navigate(-1)}
+                onClick={() => navigate({ to: '..' })}
               >
                 <ChevronLeftIcon className="size-4" />
               </Button>
@@ -720,7 +724,7 @@ export const Component = () => {
                       <Input {...field} className="font-mono" />
                     </FormControl>
                     <FormDescription>
-                      用户文件夹位于 <span className="font-mono">/home/{user.name}</span>
+                      用户文件夹位于 <span className="font-mono">/home/{user?.name}</span>
                       ，重启后数据不会丢失
                     </FormDescription>
                     <FormMessage />

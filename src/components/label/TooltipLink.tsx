@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { Link } from '@tanstack/react-router'
 import { ReactNode } from 'react'
-import { cn } from '@/lib/utils'
+
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { Link } from 'react-router-dom'
+
+import { cn } from '@/lib/utils'
 
 interface TooltipLinkProps {
   name: ReactNode

@@ -13,52 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 // ignore-i18n-script
-import { Navigate, RouteObject } from 'react-router-dom'
-import { useAuth } from '@/hooks/useAuth'
-import { FC, PropsWithChildren } from 'react'
-import { Role } from '@/services/api/auth'
-import DashboardLayout from '@/components/layout/Dashboard'
-import { User } from './User'
-import Resource from './Cluster/Resource'
 import {
+  AlarmClockIcon,
+  BarChartBigIcon,
   BoxIcon,
-  SettingsIcon,
   DatabaseIcon,
   FlaskConicalIcon,
+  FolderIcon,
   ServerIcon,
+  SettingsIcon,
   UserRoundIcon,
   UsersRoundIcon,
-  BarChartBigIcon,
-  AlarmClockIcon,
-  FolderIcon,
 } from 'lucide-react'
-import admindatasetRoutes from './Data'
-import { NavGroupProps } from '@/components/sidebar/types'
-import adminJobRoutes from './Job'
-import NotFound from '@/components/layout/NotFound'
-import UserDetail from '@/components/custom/UserDetail'
-import SystemSetting from '../Portal/Setting/SystemSetting'
-import CronPolicy from './Job/CronPolicy'
-import NetworkOverview from '@/components/monitor/NetworkOverview'
-import NvidiaOverview from '@/components/monitor/NvidiaOverview'
+import { FC, PropsWithChildren } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Navigate, RouteObject } from 'react-router-dom'
+
+import DashboardLayout from '@/components/layout/Dashboard'
+import NotFound from '@/components/layout/NotFound'
+import NetworkOverview from '@/components/monitors/network-monitor'
+import NvidiaOverview from '@/components/monitors/nvidia-monitor'
+import { NavGroupProps } from '@/components/sidebar/types'
+
+import { Role } from '@/services/api/auth'
+
+import { useAuth } from '@/hooks/useAuth'
+
+import SystemSetting from '../Portal/Setting/SystemSetting'
+import admindatasetRoutes from './Data'
 
 const routeItems: RouteObject[] = [
-  {
-    path: 'cluster',
-    children: [
-      {
-        path: 'node/*',
-        lazy: () => import('./Cluster/Node'),
-      },
-      {
-        path: 'resource',
-        element: <Resource />,
-      },
-    ],
-  },
   {
     path: 'monitor',
     children: [
@@ -84,27 +69,6 @@ const routeItems: RouteObject[] = [
         lazy: () => import('./Account/Detail'),
       },
     ],
-  },
-  {
-    path: 'user/*',
-    children: [
-      {
-        index: true,
-        element: <User />,
-      },
-      {
-        path: ':name',
-        element: <UserDetail />,
-      },
-    ],
-  },
-  {
-    path: 'job/*',
-    children: adminJobRoutes,
-  },
-  {
-    path: 'cron',
-    element: <CronPolicy />,
   },
   {
     path: 'image',

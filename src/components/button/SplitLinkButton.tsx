@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { useNavigate } from '@tanstack/react-router'
 import { PlusCircleIcon } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+
 import SplitButton, { SplitButtonItem } from './SplitButton'
 
 interface URL {
@@ -30,7 +30,7 @@ const SplitLinkButton = ({ urls, title }: { urls: URL[]; title: string }) => {
   const items: SplitButtonItem[] = urls.map((url) => ({
     key: url.url,
     title: url.name,
-    action: () => navigate(`/${url.url}`),
+    action: () => navigate({ to: `/${url.url}` }),
     disabled: url.disabled,
   }))
 

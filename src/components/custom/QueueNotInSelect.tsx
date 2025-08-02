@@ -13,22 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 // i18n-processed-v1.1.0
-import { useTranslation } from 'react-i18next'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { apiListQueuesNotInDataset, QueueDataset } from '@/services/api/dataset'
-import SelectBox from './SelectBox'
-import { DialogClose, DialogFooter } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { AxiosResponse } from 'axios'
+
+import { Button } from '@/components/ui/button'
+import { DialogClose, DialogFooter } from '@/components/ui/dialog'
+
+import { QueueDataset, apiListQueuesNotInDataset } from '@/services/api/dataset'
 import { IResponse } from '@/services/types'
+
+import SelectBox from './SelectBox'
 
 interface QueueSelectProps {
   datasetId: number
-  apiShareDatasetwithQueue: (qd: QueueDataset) => Promise<AxiosResponse<IResponse<string>>>
+  apiShareDatasetwithQueue: (qd: QueueDataset) => Promise<IResponse<string>>
 }
 
 export function ShareDatasetToQueueDialog({
@@ -43,7 +44,7 @@ export function ShareDatasetToQueueDialog({
     queryKey: ['dataset', 'queueOutList', { datasetId }],
     queryFn: () => apiListQueuesNotInDataset(datasetId),
     select: (res) => {
-      return res.data.data.map((queue) => {
+      return res.data.map((queue) => {
         return {
           value: queue.id.toString(),
           label: queue.name,

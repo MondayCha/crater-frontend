@@ -13,17 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 // i18n-processed-v1.1.0 (no translatable strings)
-import { useAuth } from '@/hooks/useAuth'
 import { FC, PropsWithChildren } from 'react'
 import { Navigate } from 'react-router-dom'
+
 import { Role } from '@/services/api/auth'
+
+import { useAuth } from '@/hooks/useAuth'
 
 const AuthedRouter: FC<PropsWithChildren> = ({ children }) => {
   const isAuthenticated = useAuth(Role.User)
   // const isAuthenticated = true;
-  return isAuthenticated ? children : <Navigate to="/login" replace />
+  return isAuthenticated ? children : <Navigate to="/auth" replace />
 }
 
 export default AuthedRouter

@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { DataTableToolbarConfig } from '@/components/custom/DataTable/DataTableToolbar'
 import { jobPhases } from '@/components/badge/JobPhaseBadge'
 import { jobTypes } from '@/components/badge/JobTypeBadge'
+import { DataTableToolbarConfig } from '@/components/custom/DataTable/DataTableToolbar'
 
 export const getHeader = (key: string): string => {
   switch (key) {

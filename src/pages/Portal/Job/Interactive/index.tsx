@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { RouteObject } from 'react-router-dom'
+
+import { Base } from '../../../../components/job/detail'
 import InterOverview from './InterOverview'
-import { Base } from '../Detail/Base'
 
 const interactiveRoutes: RouteObject[] = [
   {

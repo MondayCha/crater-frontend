@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import instance, { VERSION } from '../axios'
+import { apiDelete, apiGet, apiPost } from '@/services/client'
 import { IResponse } from '@/services/types'
+
 import { IUserAttributes } from './admin/user'
 import { IUserInfo } from './vcjob'
 
@@ -80,58 +80,56 @@ export interface cancelSharedQueueResp {
   datasetID: number
   queueID: number
 }
-export const apiGetDataset = () =>
-  instance.get<IResponse<IDataset[]>>(VERSION + `/dataset/mydataset`)
+export const apiGetDataset = () => apiGet<IResponse<IDataset[]>>(`/dataset/mydataset`)
 
 //因为table表单的query必须要返回数组，实际上数组里只有一个数据集的数据
 export const apiGetDatasetByID = (datasetID: number) =>
-  instance.get<IResponse<IDataset[]>>(VERSION + `/dataset/detail/${datasetID}`)
+  apiGet<IResponse<IDataset[]>>(`/dataset/detail/${datasetID}`)
 
-export const apiAdminGetDataset = () =>
-  instance.get<IResponse<IDataset[]>>(VERSION + `/admin/dataset/alldataset`)
+export const apiAdminGetDataset = () => apiGet<IResponse<IDataset[]>>(`/admin/dataset/alldataset`)
 
 export const apiShareDatasetwithUser = (ud: UserDataset) =>
-  instance.post<IResponse<string>>(VERSION + '/dataset/share/user', ud)
+  apiPost<IResponse<string>>('/dataset/share/user', ud)
 
 export const apiShareDatasetwithQueue = (qd: QueueDataset) =>
-  instance.post<IResponse<string>>(VERSION + '/dataset/share/queue', qd)
+  apiPost<IResponse<string>>('/dataset/share/queue', qd)
 
 export const apiDatasetCreate = (dataset: DatasetReq) =>
-  instance.post<IResponse<string>>(VERSION + '/dataset/create', dataset)
+  apiPost<IResponse<string>>('/dataset/create', dataset)
 
 export const apiDatasetDelete = (datasetID: number) =>
-  instance.delete<IResponse<string>>(VERSION + `/dataset/delete/${datasetID}`)
+  apiDelete<IResponse<string>>(`/dataset/delete/${datasetID}`)
 
 export const apiDatasetRename = (drr: DatasetRenameReq) =>
-  instance.post<IResponse<string>>(VERSION + '/dataset/rename', drr)
+  apiPost<IResponse<string>>('/dataset/rename', drr)
 
 export const apiAdminShareDatasetwithUser = (ud: UserDataset) =>
-  instance.post<IResponse<string>>(VERSION + '/admin/dataset/share/user', ud)
+  apiPost<IResponse<string>>('/admin/dataset/share/user', ud)
 
 export const apiAdminShareDatasetwithQueue = (qd: QueueDataset) =>
-  instance.post<IResponse<string>>(VERSION + '/admin/dataset/share/queue', qd)
+  apiPost<IResponse<string>>('/admin/dataset/share/queue', qd)
 
 export const apiListUsersNotInDataset = (datasetID: number) =>
-  instance.get<IResponse<IUserAttributes[]>>(VERSION + `/dataset/${datasetID}/usersNotIn`)
+  apiGet<IResponse<IUserAttributes[]>>(`/dataset/${datasetID}/usersNotIn`)
 
 export const apiListQueuesNotInDataset = (datasetID: number) =>
-  instance.get<IResponse<QueueDatasetGetResp[]>>(VERSION + `/dataset/${datasetID}/queuesNotIn`)
+  apiGet<IResponse<QueueDatasetGetResp[]>>(`/dataset/${datasetID}/queuesNotIn`)
 export const apiListUsersInDataset = (datasetID: number) =>
-  instance.get<IResponse<UserDatasetResp[]>>(VERSION + `/dataset/${datasetID}/usersIn`)
+  apiGet<IResponse<UserDatasetResp[]>>(`/dataset/${datasetID}/usersIn`)
 
 export const apiListQueuesInDataset = (datasetID: number) =>
-  instance.get<IResponse<QueueDatasetGetResp[]>>(VERSION + `/dataset/${datasetID}/queuesIn`)
+  apiGet<IResponse<QueueDatasetGetResp[]>>(`/dataset/${datasetID}/queuesIn`)
 
 export const apiCancelShareWithUser = (CSU: cancelSharedUserResp) =>
-  instance.post<IResponse<string>>(VERSION + `/dataset/cancelshare/user`, CSU)
+  apiPost<IResponse<string>>(`/dataset/cancelshare/user`, CSU)
 
 export const apiCancelShareWithQueue = (CSQ: cancelSharedQueueResp) =>
-  instance.post<IResponse<string>>(VERSION + `/dataset/cancelshare/queue`, CSQ)
+  apiPost<IResponse<string>>(`/dataset/cancelshare/queue`, CSQ)
 
 export const apiAdminCancelShareWithUser = (CSU: cancelSharedUserResp) =>
-  instance.post<IResponse<string>>(VERSION + `/admin/dataset/cancelshare/user`, CSU)
+  apiPost<IResponse<string>>(`/admin/dataset/cancelshare/user`, CSU)
 
 export const apiAdminCancelShareWithQueue = (CSQ: cancelSharedQueueResp) =>
-  instance.post<IResponse<string>>(VERSION + `/admin/dataset/cancelshare/queue`, CSQ)
+  apiPost<IResponse<string>>(`/admin/dataset/cancelshare/queue`, CSQ)
 export const apiDatasetUpdate = (dataset: DatasetReq & { datasetId: number }) =>
-  instance.post<IResponse<string>>(VERSION + '/dataset/update', dataset)
+  apiPost<IResponse<string>>('/dataset/update', dataset)

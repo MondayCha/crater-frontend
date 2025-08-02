@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { BookOpenIcon } from 'lucide-react'
-import { Button, buttonVariants } from '../ui/button'
-import { configUrlWebsiteBaseAtom } from '@/utils/store/config'
-import { useAtomValue } from 'jotai'
 import { VariantProps } from 'class-variance-authority'
+import { useAtomValue } from 'jotai'
+import { BookOpenIcon } from 'lucide-react'
+
+import { Button, buttonVariants } from '@/components/ui/button'
+
+import { configUrlWebsiteBaseAtom } from '@/utils/store/config'
+
 import { cn } from '@/lib/utils'
-import { Link } from 'react-router-dom'
 
 type DocsButtonProps = React.ComponentProps<'button'> &
   VariantProps<typeof buttonVariants> & {
@@ -37,10 +38,10 @@ const DocsButton = ({ title, url, variant, className, ...props }: DocsButtonProp
       {...props}
       asChild
     >
-      <Link to={`${website}/docs/user/${url}`} reloadDocument>
+      <a href={`${website}/docs/user/${url}`} target="_blank" rel="noopener noreferrer">
         <BookOpenIcon />
         {title}
-      </Link>
+      </a>
     </Button>
   )
 }

@@ -13,19 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 // i18n-processed-v1.1.0
 // Modified code
+import { REFETCH_INTERVAL } from '@/config/task'
+import { useQuery } from '@tanstack/react-query'
+import { CpuIcon, GpuIcon, MemoryStickIcon } from 'lucide-react'
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+
 import { Card, CardDescription, CardFooter, CardHeader } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
-import { ResourceResp } from '@/services/api/context'
-import { useQuery } from '@tanstack/react-query'
-import { CpuIcon, MemoryStickIcon, GpuIcon } from 'lucide-react'
-import { REFETCH_INTERVAL } from '@/config/task'
-import { useMemo } from 'react'
-import { cn } from '@/lib/utils'
+
 import { apiAccountQuotaGet } from '@/services/api/account'
+import { ResourceResp } from '@/services/api/context'
+
+import { cn } from '@/lib/utils'
 
 const showAmount = (allocated: number, label?: string) => {
   if (label === 'mem') {
@@ -124,7 +126,7 @@ const Quota = ({ accountID }: { accountID: number }) => {
   const { data: quota } = useQuery({
     queryKey: ['admin', 'accounts', accountID, 'quota'],
     queryFn: () => apiAccountQuotaGet(accountID),
-    select: (res) => res.data.data,
+    select: (res) => res.data,
     enabled: !!accountID,
     refetchInterval: REFETCH_INTERVAL,
   })

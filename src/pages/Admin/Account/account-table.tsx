@@ -13,12 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 // i18n-processed-v1.1.0
-import { DataTableColumnHeader } from '@/components/custom/PagenationDataTable/DataTableColumnHeader'
-import { IAccount } from '@/services/api/account'
-import { Button } from '@/components/ui/button'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
+import { Link } from '@tanstack/react-router'
+import { ColumnDef } from '@tanstack/react-table'
 import { PencilIcon, TrashIcon, UserRoundIcon } from 'lucide-react'
+import { PlusCircleIcon } from 'lucide-react'
+import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
+
+import { Button } from '@/components/ui/button'
+
+import ResourceBadges from '@/components/badge/ResourceBadges'
+import { DataTable } from '@/components/custom/DataTable'
+import { DataTableToolbarConfig } from '@/components/custom/DataTable/DataTableToolbar'
+import { DataTableColumnHeader } from '@/components/custom/PagenationDataTable/DataTableColumnHeader'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,19 +41,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui-custom/alert-dialog'
-import { ColumnDef } from '@tanstack/react-table'
-import ResourceBadges from '@/components/badge/ResourceBadges'
-import { DataTableToolbarConfig } from '@/components/custom/DataTable/DataTableToolbar'
-import { Link } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
+
+import { IAccount } from '@/services/api/account'
 import { apiAdminAccountList } from '@/services/api/account'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { PlusCircleIcon } from 'lucide-react'
-import { useMemo } from 'react'
-import { useMutation } from '@tanstack/react-query'
 import { apiProjectDelete } from '@/services/api/account'
-import { DataTable } from '@/components/custom/DataTable'
-import { toast } from 'sonner'
 
 const getHeader = (key: string): string => {
   switch (key) {
@@ -81,7 +83,7 @@ export const AccountTable = ({
   const query = useQuery({
     queryKey: ['admin', 'accounts'],
     queryFn: apiAdminAccountList,
-    select: (res) => res.data.data,
+    select: (res) => res.data,
   })
 
   const { mutate: deleteAccount } = useMutation({

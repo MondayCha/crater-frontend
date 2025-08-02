@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { useQuery } from '@tanstack/react-query'
-import { apiResourceList, Resource } from '@/services/api/resource'
+
+import { Resource, apiResourceList } from '@/services/api/resource'
 
 const useResourceListQuery = <T = Resource>(
   withVendorDomain: boolean,
@@ -26,7 +26,7 @@ const useResourceListQuery = <T = Resource>(
     queryKey: ['resources', 'list', withVendorDomain],
     queryFn: () => apiResourceList(withVendorDomain),
     select: (res) => {
-      return res.data.data
+      return res.data
         .sort((a, b) => {
           return a.name.localeCompare(b.name)
         })

@@ -13,37 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { ColumnDef } from '@tanstack/react-table'
-import { useMemo } from 'react'
+import { REFETCH_INTERVAL } from '@/config/task'
+import { getHeader, jobToolbarConfig } from '@/pages/Portal/Job/statuses'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import {
-  apiJobDelete,
-  apiJupyterTokenGet,
-  JobPhase,
-  apiJobInteractiveList,
-} from '@/services/api/vcjob'
+import { ColumnDef } from '@tanstack/react-table'
+import { useAtomValue } from 'jotai'
+import { Trash2Icon } from 'lucide-react'
+import { useMemo } from 'react'
+import { toast } from 'sonner'
+
+import JobPhaseLabel from '@/components/badge/JobPhaseBadge'
+import JobTypeLabel from '@/components/badge/JobTypeBadge'
+import NodeBadges from '@/components/badge/NodeBadges'
+import ResourceBadges from '@/components/badge/ResourceBadges'
+import DocsButton from '@/components/button/DocsButton'
+import SplitLinkButton from '@/components/button/SplitLinkButton'
 import { DataTable } from '@/components/custom/DataTable'
 import { DataTableColumnHeader } from '@/components/custom/DataTable/DataTableColumnHeader'
 import { TimeDistance } from '@/components/custom/TimeDistance'
-import { toast } from 'sonner'
-import { getHeader, jobToolbarConfig } from '@/pages/Portal/Job/statuses'
-import { logger } from '@/utils/loglevel'
-import JobPhaseLabel from '@/components/badge/JobPhaseBadge'
-import { Trash2Icon } from 'lucide-react'
-import SplitLinkButton from '@/components/button/SplitLinkButton'
-import { IJobInfo, JobType } from '@/services/api/vcjob'
-import { REFETCH_INTERVAL } from '@/config/task'
-import { useAtomValue } from 'jotai'
-import { globalJobUrl } from '@/utils/store'
-import NodeBadges from '@/components/badge/NodeBadges'
-import ResourceBadges from '@/components/badge/ResourceBadges'
-import JobTypeLabel from '@/components/badge/JobTypeBadge'
 import TooltipButton from '@/components/custom/TooltipButton'
-import DocsButton from '@/components/button/DocsButton'
-import { JobNameCell } from '@/components/label/JobNameLabel'
-import { JobActionsMenu } from '@/components/job/JobActionsMenu'
 import JupyterIcon from '@/components/icon/JupyterIcon'
+import { JobActionsMenu } from '@/components/job/job-actions-menu'
+import { JobNameCell } from '@/components/label/JobNameLabel'
+
+import {
+  JobPhase,
+  apiJobDelete,
+  apiJobInteractiveList,
+  apiJupyterTokenGet,
+} from '@/services/api/vcjob'
+import { IJobInfo, JobType } from '@/services/api/vcjob'
+
+import { logger } from '@/utils/loglevel'
+import { globalJobUrl } from '@/utils/store'
+
 import Quota from './Quota'
 
 const InterOverview = () => {
@@ -53,7 +56,7 @@ const InterOverview = () => {
   const interactiveQuery = useQuery({
     queryKey: ['job', 'interactive'],
     queryFn: apiJobInteractiveList,
-    select: (res) => res.data.data.filter((task) => task.jobType === JobType.Jupyter),
+    select: (res) => res.data.filter((task) => task.jobType === JobType.Jupyter),
     refetchInterval: REFETCH_INTERVAL,
   })
 

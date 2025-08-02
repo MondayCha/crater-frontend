@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { DatasetShareTable } from '@/components/file/DatasetShareTable'
 
 import {
   apiCancelShareWithQueue,
   apiCancelShareWithUser,
+  apiDatasetDelete,
   apiShareDatasetwithQueue,
   apiShareDatasetwithUser,
-  apiDatasetDelete,
 } from '@/services/api/dataset'
-import { DatasetShareTable } from '@/components/file/DatasetShareTable'
 
 export const Component = () => {
   return (

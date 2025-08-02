@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import instance, { VERSION } from '../axios'
-import { IResponse } from '../types'
 import { Event as KubernetesEvent } from 'kubernetes-types/core/v1'
-import { ContainerStateTerminated, ContainerState } from 'kubernetes-types/core/v1'
+import { ContainerState, ContainerStateTerminated } from 'kubernetes-types/core/v1'
+
+import { apiDelete, apiGet, apiPost } from '@/services/client'
+
+import { IResponse } from '../types'
 
 export type TerminatedState = ContainerStateTerminated
 
@@ -35,14 +36,10 @@ export interface ContainerStatusResponse {
 }
 
 export const apiGetPodContainers = (namespace?: string, podName?: string) =>
-  instance.get<IResponse<ContainerStatusResponse>>(
-    `${VERSION}/namespaces/${namespace}/pods/${podName}/containers`
-  )
+  apiGet<IResponse<ContainerStatusResponse>>(`/namespaces/${namespace}/pods/${podName}/containers`)
 
 export const apiGetPodEvents = (namespace?: string, podName?: string) =>
-  instance.get<IResponse<KubernetesEvent[]>>(
-    `${VERSION}/namespaces/${namespace}/pods/${podName}/events`
-  )
+  apiGet<IResponse<KubernetesEvent[]>>(`/namespaces/${namespace}/pods/${podName}/events`)
 
 export interface PodContainerLogQueryReq {
   timestamps: boolean
@@ -57,10 +54,10 @@ export const apiGetPodContainerLog = (
   containerName?: string,
   query?: PodContainerLogQueryReq
 ) => {
-  return instance.get<IResponse<string>>(
-    `${VERSION}/namespaces/${namespace}/pods/${podName}/containers/${containerName}/log`,
+  return apiGet<IResponse<string>>(
+    `/namespaces/${namespace}/pods/${podName}/containers/${containerName}/log`,
     {
-      params: query,
+      searchParams: { ...query },
     }
   )
 }
@@ -81,31 +78,23 @@ export interface PodIngressesList {
 }
 
 export const apiGetPodIngresses = (namespace: string, podName: string) =>
-  instance.get<IResponse<PodIngressesList>>(
-    `${VERSION}/namespaces/${namespace}/pods/${podName}/ingresses`
-  )
+  apiGet<IResponse<PodIngressesList>>(`/namespaces/${namespace}/pods/${podName}/ingresses`)
 
 export const apiCreatePodIngress = (
   namespace: string,
   podName: string,
   ingressMgr: PodIngressMgr
 ) =>
-  instance.post<IResponse<PodIngress>>(
-    `${VERSION}/namespaces/${namespace}/pods/${podName}/ingresses`,
-    ingressMgr
-  )
+  apiPost<IResponse<PodIngress>>(`/namespaces/${namespace}/pods/${podName}/ingresses`, ingressMgr)
 
 export const apiDeletePodIngress = (
   namespace: string,
   podName: string,
   ingressMgr: PodIngressMgr
 ) =>
-  instance.delete<IResponse<string>>(
-    `${VERSION}/namespaces/${namespace}/pods/${podName}/ingresses`,
-    {
-      data: ingressMgr,
-    }
-  )
+  apiDelete<IResponse<string>>(`/namespaces/${namespace}/pods/${podName}/ingresses`, {
+    data: ingressMgr,
+  })
 
 export interface PodNodeport {
   name: string
@@ -124,28 +113,20 @@ export interface PodNodeportsList {
 }
 
 export const apiGetPodNodeports = (namespace: string, podName: string) =>
-  instance.get<IResponse<PodNodeportsList>>(
-    `${VERSION}/namespaces/${namespace}/pods/${podName}/nodeports`
-  )
+  apiGet<IResponse<PodNodeportsList>>(`/namespaces/${namespace}/pods/${podName}/nodeports`)
 
 export const apiCreatePodNodeport = (
   namespace: string,
   podName: string,
   nodeportMgr: PodNodeportMgr
 ) =>
-  instance.post<IResponse<PodIngress>>(
-    `${VERSION}/namespaces/${namespace}/pods/${podName}/nodeports`,
-    nodeportMgr
-  )
+  apiPost<IResponse<PodIngress>>(`/namespaces/${namespace}/pods/${podName}/nodeports`, nodeportMgr)
 
 export const apiDeletePodNodeport = (
   namespace: string,
   podName: string,
   nodeportMgr: PodNodeportMgr
 ) =>
-  instance.delete<IResponse<string>>(
-    `${VERSION}/namespaces/${namespace}/pods/${podName}/nodeports`,
-    {
-      data: nodeportMgr,
-    }
-  )
+  apiDelete<IResponse<string>>(`/namespaces/${namespace}/pods/${podName}/nodeports`, {
+    data: nodeportMgr,
+  })

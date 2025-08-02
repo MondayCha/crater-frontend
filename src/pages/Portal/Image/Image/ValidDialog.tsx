@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { useQuery } from '@tanstack/react-query'
+import { AlertCircle, CheckCheck, CheckCircle, Loader2, Trash2, X } from 'lucide-react'
 import { type FC } from 'react'
-import { apiUserCheckImageValid, ImageLinkPair } from '@/services/api/imagepack'
+
+import { Button } from '@/components/ui/button'
 import {
   DialogClose,
   DialogDescription,
@@ -24,8 +25,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { AlertCircle, CheckCheck, CheckCircle, Loader2, Trash2, X } from 'lucide-react'
+
+import { ImageLinkPair, apiUserCheckImageValid } from '@/services/api/imagepack'
 
 interface ValidDialogProps {
   linkPairs: ImageLinkPair[]
@@ -36,7 +37,7 @@ export const ValidDialog: FC<ValidDialogProps> = ({ linkPairs, onDeleteLinks }) 
   const { data, isLoading } = useQuery({
     queryKey: ['checkImageValid', linkPairs],
     queryFn: () => apiUserCheckImageValid({ linkPairs }),
-    select: (res) => res.data.data.linkPairs,
+    select: (res) => res.data.linkPairs,
   })
 
   const invalidPairs = data

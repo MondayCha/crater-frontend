@@ -13,21 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 // i18n-processed-v1.1.0 (no translatable strings)
+import { Event as KubernetesEvent } from 'kubernetes-types/core/v1'
+
 import TipBadge from '@/components/badge/TipBadge'
-import { TimeDistance } from '../TimeDistance'
 import {
   Timeline,
-  TimelineItem,
+  TimelineBody,
   TimelineConnector,
   TimelineHeader,
   TimelineIcon,
+  TimelineItem,
   TimelineTitle,
-  TimelineBody,
 } from '@/components/custom/Timeline/Timeline'
-import { Event as KubernetesEvent } from 'kubernetes-types/core/v1'
+
 import { cn } from '@/lib/utils'
+
+import { TimeDistance } from '../TimeDistance'
 
 interface TimelineLayoutProps {
   items: KubernetesEvent[] // Replace any[] with the actual type of items.

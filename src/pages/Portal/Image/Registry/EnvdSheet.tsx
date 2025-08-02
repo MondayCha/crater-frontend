@@ -13,9 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { CircleHelpIcon, PackagePlusIcon } from 'lucide-react'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+import { z } from 'zod'
+
 import {
   Form,
   FormControl,
@@ -25,33 +29,33 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import { z } from 'zod'
-import SandwichSheet, { SandwichLayout, SandwichSheetProps } from '@/components/sheet/SandwichSheet'
-import LoadableButton from '@/components/button/LoadableButton'
-import { PackagePlusIcon, CircleHelpIcon } from 'lucide-react'
-import FormImportButton from '@/components/form/FormImportButton'
-import FormExportButton from '@/components/form/FormExportButton'
-import { MetadataFormEnvdAdvanced } from '@/components/form/types'
 import { Input } from '@/components/ui/input'
-import {
-  apiGetCudaBaseImages,
-  apiUserCreateByEnvd,
-  FetchAllUniqueImageTagObjects,
-  imageNameRegex,
-  ImagePackSource,
-  imageTagRegex,
-} from '@/services/api/imagepack'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import FormLabelMust from '@/components/form/FormLabelMust'
-import Combobox from '@/components/form/Combobox'
+import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+
+import LoadableButton from '@/components/button/LoadableButton'
+import Combobox from '@/components/form/Combobox'
+import FormExportButton from '@/components/form/FormExportButton'
+import FormImportButton from '@/components/form/FormImportButton'
+import FormLabelMust from '@/components/form/FormLabelMust'
 import { ImageSettingsFormCard } from '@/components/form/ImageSettingsFormCard'
 import { TagsInput } from '@/components/form/TagsInput'
-import { exportToJsonString } from '@/utils/form'
-import { toast } from 'sonner'
+import { MetadataFormEnvdAdvanced } from '@/components/form/types'
+import SandwichSheet, { SandwichLayout, SandwichSheetProps } from '@/components/sheet/SandwichSheet'
+
+import {
+  FetchAllUniqueImageTagObjects,
+  ImagePackSource,
+  apiGetCudaBaseImages,
+  apiUserCreateByEnvd,
+  imageNameRegex,
+  imageTagRegex,
+} from '@/services/api/imagepack'
+
 import { useImageTemplateLoader } from '@/hooks/useTemplateLoader'
-import { Switch } from '@/components/ui/switch'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+
+import { exportToJsonString } from '@/utils/form'
 
 const envdFormSchema = z.object({
   python: z.string().min(1, 'Python version is required'),
@@ -225,7 +229,7 @@ function EnvdSheetContent({ closeSheet, imagePackName, setImagePackName }: EnvdS
     select: (res) => {
       // eslint-disable-next-line no-console
       console.log('CUDA Base Images API Response:', res)
-      return res.data.data.cudaBaseImages.map((item) => ({
+      return res.data.cudaBaseImages.map((item) => ({
         label: item.label,
         value: item.value,
         imageLabel: item.imageLabel,

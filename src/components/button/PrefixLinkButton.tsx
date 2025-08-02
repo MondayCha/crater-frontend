@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { ExternalLink } from 'lucide-react'
-import SplitButton, { SplitButtonItem } from './SplitButton'
 import { useMemo } from 'react'
+
+import SplitButton, { SplitButtonItem } from './SplitButton'
 
 interface PrefixLinkButtonProps {
   names: string[]

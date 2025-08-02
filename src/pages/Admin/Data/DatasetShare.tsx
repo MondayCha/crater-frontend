@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 // i18n-processed-v1.1.0 (no translatable strings)
+import { DatasetShareTable } from '@/components/file/DatasetShareTable'
+
 import {
   apiAdminCancelShareWithQueue,
   apiAdminCancelShareWithUser,
@@ -22,7 +23,6 @@ import {
   apiAdminShareDatasetwithUser,
   apiDatasetDelete,
 } from '@/services/api/dataset'
-import { DatasetShareTable } from '@/components/file/DatasetShareTable'
 
 export const Component = () => {
   return (

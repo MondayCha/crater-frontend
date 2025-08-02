@@ -13,44 +13,46 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 // i18n-processed-v1.1.0
 // Modified code
-import { useTranslation } from 'react-i18next'
-import { apiAdminGetDataset, apiDatasetDelete, IDataset } from '@/services/api/dataset'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { DataTable } from '@/components/custom/DataTable'
-import { Button } from '@/components/ui/button'
-import { DataTableToolbarConfig } from '@/components/custom/DataTable/DataTableToolbar'
-import { useMutation } from '@tanstack/react-query'
-import { toast } from 'sonner'
-import { ColumnDef } from '@tanstack/react-table'
-import { Trash2Icon, InfoIcon } from 'lucide-react'
 import { DotsHorizontalIcon } from '@radix-ui/react-icons'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
+import { useNavigate } from '@tanstack/react-router'
+import { ColumnDef } from '@tanstack/react-table'
+import { InfoIcon, Trash2Icon } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
+
 import {
   AlertDialog,
-  AlertDialogTrigger,
+  AlertDialogAction,
+  AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
   AlertDialogDescription,
   AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
+import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
-  DropdownMenuTrigger,
   DropdownMenuContent,
-  DropdownMenuLabel,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { useNavigate } from 'react-router-dom'
-import { DataTableColumnHeader } from '@/components/custom/DataTable/DataTableColumnHeader'
-import { TimeDistance } from '@/components/custom/TimeDistance'
+
 import DatasetTypeLabel, { DatasetType } from '@/components/badge/DatasetTybeBadge'
-import UserLabel from '@/components/label/UserLabel'
+import { DataTable } from '@/components/custom/DataTable'
+import { DataTableColumnHeader } from '@/components/custom/DataTable/DataTableColumnHeader'
+import { DataTableToolbarConfig } from '@/components/custom/DataTable/DataTableToolbar'
+import { TimeDistance } from '@/components/custom/TimeDistance'
 import TooltipLink from '@/components/label/TooltipLink'
+import UserLabel from '@/components/label/UserLabel'
+
+import { IDataset, apiAdminGetDataset, apiDatasetDelete } from '@/services/api/dataset'
 
 const getRoles = (t: (key: string) => string) => [
   {
@@ -102,7 +104,7 @@ export const AdminDatasetTable = () => {
   const query = useQuery({
     queryKey: ['admin', 'datasets'],
     queryFn: () => apiAdminGetDataset(),
-    select: (res) => res.data.data,
+    select: (res) => res.data,
   })
   const navigate = useNavigate()
   const { mutate: deleteDataset } = useMutation({
@@ -186,7 +188,7 @@ export const AdminDatasetTable = () => {
                   <DropdownMenuLabel className="text-muted-foreground text-xs">
                     {t('adminDatasetTable.actions.menuLabel')}
                   </DropdownMenuLabel>
-                  <DropdownMenuItem onClick={() => navigate(`${DatasetInfo.id}`)}>
+                  <DropdownMenuItem onClick={() => navigate({ to: `${DatasetInfo.id}` })}>
                     <InfoIcon className="text-highlight-emerald" />
                     {t('adminDatasetTable.actions.viewDetails')}
                   </DropdownMenuItem>

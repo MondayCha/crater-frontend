@@ -13,19 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { useTranslation } from 'react-i18next'
-import { useState } from 'react'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { z } from 'zod'
-import { useFieldArray, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { toast } from 'sonner'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { format } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
-import { apiAccountCreate, apiAccountUpdate, IAccount } from '@/services/api/account'
-import { AccountFormSchema, formSchema } from './account-form'
-import { convertFormToQuota } from '@/utils/quota'
+import { useAtomValue } from 'jotai'
+import { CalendarIcon, CirclePlusIcon, XIcon } from 'lucide-react'
+import { useState } from 'react'
+import { useFieldArray, useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
+import { z } from 'zod'
+
+import { Button } from '@/components/ui/button'
+import { Calendar } from '@/components/ui/calendar'
 import {
   Form,
   FormControl,
@@ -35,23 +36,27 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import { SandwichLayout } from '@/components/sheet/SandwichSheet'
-import FormLabelMust from '@/components/form/FormLabelMust'
-import LoadableButton from '@/components/button/LoadableButton'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Calendar } from '@/components/ui/calendar'
-import { CalendarIcon, CirclePlusIcon, XIcon } from 'lucide-react'
-import { cn } from '@/lib/utils'
+
+import LoadableButton from '@/components/button/LoadableButton'
 import SelectBox from '@/components/custom/SelectBox'
-import FormImportButton from '@/components/form/FormImportButton'
 import FormExportButton from '@/components/form/FormExportButton'
+import FormImportButton from '@/components/form/FormImportButton'
+import FormLabelMust from '@/components/form/FormLabelMust'
 import { MetadataFormAccount } from '@/components/form/types'
+import { SandwichLayout } from '@/components/sheet/SandwichSheet'
+
+import { IAccount, apiAccountCreate, apiAccountUpdate } from '@/services/api/account'
 import { apiAdminUserList } from '@/services/api/admin/user'
-import { useAtomValue } from 'jotai'
-import { globalSettings } from '@/utils/store'
 import { apiResourceList } from '@/services/api/resource'
+
+import { convertFormToQuota } from '@/utils/quota'
+import { globalSettings } from '@/utils/store'
+
+import { cn } from '@/lib/utils'
+
+import { AccountFormSchema, formSchema } from './account-form'
 
 interface AccountFormProps {
   onOpenChange: (open: boolean) => void
@@ -68,7 +73,7 @@ export const AccountForm = ({ onOpenChange, account }: AccountFormProps) => {
     queryKey: ['admin', 'userlist'],
     queryFn: apiAdminUserList,
     select: (res) =>
-      res.data.data.map((user) => ({
+      res.data.map((user) => ({
         value: user.id.toString(),
         label: user.attributes.nickname || user.name,
         labelNote: user.name,
@@ -79,7 +84,7 @@ export const AccountForm = ({ onOpenChange, account }: AccountFormProps) => {
     queryKey: ['resources', 'list'],
     queryFn: () => apiResourceList(false),
     select: (res) => {
-      return res.data.data
+      return res.data
         .map((item) => item.name)
         .filter(
           (name) =>

@@ -13,22 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 // i18n-processed-v1.1.0
-import { useTranslation } from 'react-i18next'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { apiListUsersNotInDataset, UserDataset } from '@/services/api/dataset'
-import SelectBox from './SelectBox'
-import { DialogClose, DialogFooter } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { AxiosResponse } from 'axios'
+
+import { Button } from '@/components/ui/button'
+import { DialogClose, DialogFooter } from '@/components/ui/dialog'
+
+import { UserDataset, apiListUsersNotInDataset } from '@/services/api/dataset'
 import { IResponse } from '@/services/types'
+
+import SelectBox from './SelectBox'
 
 interface UserSelectProps {
   datasetId: number
-  apiShareDatasetwithUser: (userDataset: UserDataset) => Promise<AxiosResponse<IResponse<string>>>
+  apiShareDatasetwithUser: (userDataset: UserDataset) => Promise<IResponse<string>>
 }
 
 export function ShareDatasetToUserDialog({ datasetId, apiShareDatasetwithUser }: UserSelectProps) {
@@ -40,7 +41,7 @@ export function ShareDatasetToUserDialog({ datasetId, apiShareDatasetwithUser }:
     queryKey: ['dataset', 'userOutList', { datasetId }],
     queryFn: () => apiListUsersNotInDataset(datasetId),
     select: (res) => {
-      return res.data.data.map((user) => {
+      return res.data.map((user) => {
         return {
           value: user.id.toString(),
           label: user.nickname,

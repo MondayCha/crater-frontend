@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useQuery } from '@tanstack/react-query'
 
 import { ComboboxItem } from '@/components/form/Combobox'
+
 import { ImageInfoResponse } from '@/services/api/imagepack'
-import { apiJTaskImageList, JobType } from '@/services/api/vcjob'
-import { useQuery } from '@tanstack/react-query'
+import { JobType, apiJTaskImageList } from '@/services/api/vcjob'
 
 const useImageQuery = (type?: JobType) => {
   return useQuery({
@@ -25,7 +26,7 @@ const useImageQuery = (type?: JobType) => {
     queryFn: () => apiJTaskImageList(type || JobType.Jupyter),
     select: (res) => {
       const items = Array.from(
-        new Map(res.data.data.images.map((item) => [item.imageLink, item])).values()
+        new Map(res.data.images.map((item) => [item.imageLink, item])).values()
       )
         // Sort by creation time, newest first
         .sort((a, b) => {

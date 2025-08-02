@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { QrCode, RocketIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { useLocalStorage } from 'usehooks-ts'
+
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -24,9 +26,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { useLocalStorage } from 'usehooks-ts'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { QrCode, RocketIcon } from 'lucide-react'
+
 import { MarkdownRenderer } from '@/components/form/markdown-renderer'
 
 // Current app version - update this when you release new features

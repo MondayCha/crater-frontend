@@ -13,12 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useNavigate } from '@tanstack/react-router'
+import { useAtomValue } from 'jotai'
+import { CirclePlus, LayoutGridIcon } from 'lucide-react'
+import { useState } from 'react'
+import { useFieldArray, useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+import { z } from 'zod'
 
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import CardTitle from '@/components/label/CardTitle'
-import { useNavigate } from 'react-router-dom'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import {
   Form,
   FormControl,
@@ -29,13 +34,26 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { useForm, useFieldArray } from 'react-hook-form'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { apiJupyterCreate } from '@/services/api/vcjob'
-import { toast } from 'sonner'
-import { CirclePlus, LayoutGridIcon } from 'lucide-react'
+
+import LoadableButton from '@/components/button/LoadableButton'
+import { VolumeMountsCard } from '@/components/form/DataMountFormField'
+import { EnvFormCard } from '@/components/form/EnvFormField'
+import FormExportButton from '@/components/form/FormExportButton'
+import FormImportButton from '@/components/form/FormImportButton'
 import FormLabelMust from '@/components/form/FormLabelMust'
+import { ForwardFormCard } from '@/components/form/ForwardFormField'
+import { ImageFormField } from '@/components/form/ImageFormField'
+import { OtherOptionsFormCard } from '@/components/form/OtherOptionsFormField'
+import { ResourceFormFields } from '@/components/form/ResourceFormField'
+import { TemplateInfo } from '@/components/form/TemplateInfo'
+import { MetadataFormJupyter } from '@/components/form/types'
+import CardTitle from '@/components/label/CardTitle'
+import PageTitle from '@/components/layout/PageTitle'
+
+import { apiJupyterCreate } from '@/services/api/vcjob'
+
 import {
+  VolumeMountType,
   convertToResourceList,
   defaultResource,
   envsSchema,
@@ -45,25 +63,11 @@ import {
   nodeSelectorSchema,
   taskSchema,
   volumeMountsSchema,
-  VolumeMountType,
 } from '@/utils/form'
-import { useState } from 'react'
-import { useAtomValue } from 'jotai'
-import { globalUserInfo } from '@/utils/store'
-import FormExportButton from '@/components/form/FormExportButton'
-import FormImportButton from '@/components/form/FormImportButton'
-import { MetadataFormJupyter } from '@/components/form/types'
-import LoadableButton from '@/components/button/LoadableButton'
-import PageTitle from '@/components/layout/PageTitle'
-import { PublishConfigForm } from './Publish'
-import { ImageFormField } from '@/components/form/ImageFormField'
-import { VolumeMountsCard } from '@/components/form/DataMountFormField'
-import { ResourceFormFields } from '@/components/form/ResourceFormField'
-import { TemplateInfo } from '@/components/form/TemplateInfo'
-import { OtherOptionsFormCard } from '@/components/form/OtherOptionsFormField'
-import { EnvFormCard } from '@/components/form/EnvFormField'
-import { ForwardFormCard } from '@/components/form/ForwardFormField'
+import { atomUserInfo } from '@/utils/store'
 import { configFeatureFlags } from '@/utils/store/config'
+
+import { PublishConfigForm } from '../../../../components/job/publish'
 
 const JupyterMarkdown = `Jupyter 为用户提供交互式的 Web 实验环境，可用于代码调试等场景。
 
@@ -112,7 +116,7 @@ export const Component = () => {
   const [otherOpen, setOtherOpen] = useState(true)
   const navigate = useNavigate()
   const queryClient = useQueryClient()
-  const user = useAtomValue(globalUserInfo)
+  const user = useAtomValue(atomUserInfo)
   const flags = useAtomValue(configFeatureFlags)
 
   const { mutate: createTask, isPending } = useMutation({
@@ -142,7 +146,7 @@ export const Component = () => {
         queryClient.invalidateQueries({ queryKey: ['job'] })
       )
       toast.success(`作业 ${jobName} 创建成功`)
-      navigate(-1)
+      navigate({ to: '..' })
     },
   })
 
@@ -158,14 +162,14 @@ export const Component = () => {
         image: '',
         shell: '',
         command: '',
-        workingDir: `/home/${user.name}`,
+        workingDir: `/home/${user?.name}`,
         ports: [],
       },
       volumeMounts: [
         {
           type: VolumeMountType.FileType,
           subPath: `user`,
-          mountPath: `/home/${user.name}`,
+          mountPath: `/home/${user?.name}`,
         },
       ],
       forwards: [],

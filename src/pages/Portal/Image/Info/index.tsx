@@ -13,21 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { useMutation, useQuery } from '@tanstack/react-query'
-import React, { useEffect, type FC } from 'react'
+import { useNavigate, useParams } from '@tanstack/react-router'
+import { ActivityIcon, Clock, CodeIcon, Hash, Link2, LogsIcon, Trash2Icon } from 'lucide-react'
+import React, { type FC, useEffect } from 'react'
+import { toast } from 'sonner'
+
+import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { useNavigate, useParams } from 'react-router-dom'
-import useBreadcrumb from '@/hooks/useBreadcrumb'
-import { apiUserDeleteKaniko, apiUserGetKaniko, KanikoInfoResponse } from '@/services/api/imagepack'
-import { Clock, Hash, Link2, LogsIcon, CodeIcon, ActivityIcon, Trash2Icon } from 'lucide-react'
+
+import ImagePhaseBadge from '@/components/badge/ImagePhaseBadge'
+import { CodeContent } from '@/components/codeblock/ConfigDialog'
+import DetailPageLog from '@/components/codeblock/DetailPageLog'
 import { TimeDistance } from '@/components/custom/TimeDistance'
 import { DetailPage } from '@/components/layout/DetailPage'
 import PageTitle from '@/components/layout/PageTitle'
-import { shortenImageName } from '@/utils/formatter'
-import { CodeContent } from '@/components/codeblock/ConfigDialog'
-import DetailPageLog from '@/components/codeblock/DetailPageLog'
-import ImagePhaseBadge from '@/components/badge/ImagePhaseBadge'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -39,8 +39,12 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui-custom/alert-dialog'
-import { Button } from '@/components/ui/button'
-import { toast } from 'sonner'
+
+import { KanikoInfoResponse, apiUserDeleteKaniko, apiUserGetKaniko } from '@/services/api/imagepack'
+
+import useBreadcrumb from '@/hooks/useBreadcrumb'
+
+import { shortenImageName } from '@/utils/formatter'
 
 type KanikoCard = React.ComponentProps<typeof Card> & {
   kanikoInfo?: KanikoInfoResponse
@@ -52,7 +56,7 @@ function KanikoInfo({ kanikoInfo }: KanikoCard) {
   const { mutate: userDeleteKaniko } = useMutation({
     mutationFn: (id: number) => apiUserDeleteKaniko(id),
     onSuccess: async () => {
-      navigate(-1)
+      navigate({ to: '..' })
       toast.success('镜像已删除')
     },
   })
@@ -168,7 +172,7 @@ export const KanikoDetail: FC = () => {
   const { data: kanikoInfo } = useQuery({
     queryKey: ['imagepack', 'get', ImagePackName],
     queryFn: () => apiUserGetKaniko(`${ImagePackName}`),
-    select: (res) => res.data.data,
+    select: (res) => res.data,
     enabled: !!ImagePackName,
   })
 

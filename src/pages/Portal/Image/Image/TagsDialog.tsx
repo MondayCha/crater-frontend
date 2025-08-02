@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { Input } from '@/components/ui/input'
-import { Plus, X, Loader2, Check } from 'lucide-react'
+import { Check, Loader2, Plus, X } from 'lucide-react'
 import { FC, useRef, useState } from 'react'
+import { toast } from 'sonner'
+
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   DialogClose,
@@ -25,8 +26,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Badge } from '@/components/ui/badge'
-import { toast } from 'sonner'
+import { Input } from '@/components/ui/input'
+
 import { UpdateImageTag } from '@/services/api/imagepack'
 
 interface TagsDialogProps {

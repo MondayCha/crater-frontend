@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 // ignore-i18n-script
+import { Link, useNavigate } from '@tanstack/react-router'
+import { useAtomValue, useSetAtom } from 'jotai'
 import {
   BadgeCheck,
   BookOpenIcon,
@@ -26,6 +27,9 @@ import {
   Sparkles,
   Sun,
 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -46,40 +50,35 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar'
-import { useAtomValue, useSetAtom } from 'jotai'
-import {
-  globalAccount,
-  globalHideUsername,
-  globalLastView,
-  globalUserInfo,
-  useResetStore,
-} from '@/utils/store'
-import { Link, useNavigate } from 'react-router-dom'
-import { useQueryClient } from '@tanstack/react-query'
-import { useTheme } from '@/utils/theme'
-import { toast } from 'sonner'
+
 import { Role } from '@/services/api/auth'
+
+import { useAuth } from '@/hooks/use-auth'
 import useIsAdmin from '@/hooks/useAdmin'
-import { configUrlWebsiteBaseAtom } from '@/utils/store/config'
-import { UserAvatar } from '../custom/UserDetail/UserAvatar'
+
 import { getUserPseudonym } from '@/utils/pseudonym'
-import { useTranslation } from 'react-i18next'
+import { atomUserContext, atomUserInfo, globalHideUsername, globalLastView } from '@/utils/store'
+import { configUrlWebsiteBaseAtom } from '@/utils/store/config'
+import { useTheme } from '@/utils/theme'
+
+import { UserAvatar } from '../layout/user-detail/UserAvatar'
 
 export function NavUser() {
   const website = useAtomValue(configUrlWebsiteBaseAtom)
   const { isMobile } = useSidebar()
-  const queryClient = useQueryClient()
-  const { resetAll } = useResetStore()
-  const user = useAtomValue(globalUserInfo)
-  const account = useAtomValue(globalAccount)
+  const user = useAtomValue(atomUserInfo)
+  const context = useAtomValue(atomUserContext)
   const navigate = useNavigate()
   const { theme, setTheme } = useTheme()
   const setLastView = useSetAtom(globalLastView)
   const isAdminView = useIsAdmin()
   const hideUsername = useAtomValue(globalHideUsername)
   const { t, i18n } = useTranslation()
+  const { logout } = useAuth()
 
-  const displayName = hideUsername ? getUserPseudonym(user.name) : user.nickname || user.name
+  const displayName = hideUsername
+    ? getUserPseudonym(user?.name || '')
+    : user?.nickname || user?.name || ''
 
   const changeLanguage = (lng: 'zh' | 'en' | 'ja' | 'ko') => {
     i18n.changeLanguage(lng)
@@ -97,7 +96,7 @@ export function NavUser() {
               <UserAvatar user={user} />
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">{displayName}</span>
-                <span className="truncate text-xs">{user.email}</span>
+                <span className="truncate text-xs">{user?.email}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -113,23 +112,23 @@ export function NavUser() {
                 <UserAvatar user={user} />
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">{displayName}</span>
-                  <span className="truncate text-xs">{user.email}</span>
+                  <span className="truncate text-xs">{user?.email}</span>
                 </div>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            {account.rolePlatform === Role.Admin && (
+            {context?.rolePlatform === Role.Admin && (
               <>
                 <DropdownMenuGroup>
                   <DropdownMenuItem
                     onClick={() => {
                       if (isAdminView) {
                         setLastView('portal')
-                        navigate('/portal')
+                        navigate({ to: '/portal' })
                         toast.success(t('navUser.switchToUserView'))
                       } else {
                         setLastView('admin')
-                        navigate('/admin')
+                        navigate({ to: '/admin' })
                         toast.success(t('navUser.switchToAdminView'))
                       }
                     }}
@@ -190,10 +189,8 @@ export function NavUser() {
             <DropdownMenuItem
               className="focus:bg-destructive focus:text-destructive-foreground"
               onClick={() => {
-                setLastView(isAdminView ? 'admin' : 'portal')
-                queryClient.clear()
-                resetAll()
-                toast.success(t('navUser.loggedOut'))
+                logout()
+                navigate({ to: '/auth', search: { redirect: '/' } })
               }}
             >
               <LogOut className="dark:text-destructive-foreground" />
